@@ -1,11 +1,11 @@
 {
-  "name": "magnet-parser",
-  "version": "0.0.1",
-  "description": "Library for parsing and encoding magnet links.",
+  "name": "magnetizer",
+  "version": "0.0.2",
+  "description": "Library for decoding and encoding magnet links.",
   "main": "build/index.js",
   "scripts": {
     "build": "./node_modules/.bin/tsc",
-    "test": "./node_modules/.bin/jest --runInBand",
+    "test": "./node_modules/.bin/jest --runInBand --passWithNoTests",
     "prepare": "npm run build",
     "prepublishOnly": "npm test"
   },

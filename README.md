@@ -1,11 +1,11 @@
 
-[![NPM](https://nodei.co/npm/magnet-parser.png)](https://npmjs.org/package/magnet-parser)
+[![NPM](https://nodei.co/npm/magnetizer.png)](https://npmjs.org/package/magnetizer)
 
-[![build](https://circleci.com/gh/IvanSolomakhin/magnet-parser.svg?style=shield)](https://app.circleci.com/pipelines/github/IvanSolomakhin/magnet-parser)
-[![codecov](https://codecov.io/gh/IvanSolomakhin/magnet-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/IvanSolomakhin/magnet-parser)
+[![build](https://circleci.com/gh/IvanSolomakhin/magnetizer.svg?style=shield)](https://app.circleci.com/pipelines/github/IvanSolomakhin/magnetizer)
+[![codecov](https://codecov.io/gh/IvanSolomakhin/magnetizer/branch/master/graph/badge.svg)](https://codecov.io/gh/IvanSolomakhin/magnetizer)
 
-## Magnet-parser
-  Library for parsing and encoding [magnet links](https://en.wikipedia.org/wiki/Magnet_URI_scheme).  
+## Magnetizer
+  Library for decoding and encoding [magnet links](https://en.wikipedia.org/wiki/Magnet_URI_scheme).  
   
   Fast and easy to use.  
   Written in TypeScript.  
@@ -16,23 +16,23 @@
 ## Installation
 | npm | yarn |
 |---|---|
-| `npm install --save magnet-parser` | `yarn add magnet-parser` |
+| `npm install --save magnetizer` | `yarn add magnetizer` |
 
 ## Getting Started
 
 ##### Import library
 | typescript | javascript |
 |---|---|
-| ` import magnetParser from 'bencodec' ` | ` const magnetParser = require('magnet-parser') `|
+| ` import magnetizer from 'magnetizer' ` | ` const magnetizer = require('magnetizer') `|
 
 ##### Parse magnet link
 ```
-  magnetParser.parse('<magnet link>');
+  magnetizer.decode('<magnet link>');
 ```
 
 ##### Encode magnet link
 ```
-  magnetParser.encode('<data>');
+  magnetizer.encode('<data>');
 ```
 
 ## Tests
