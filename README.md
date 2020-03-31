@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/IvanSolomakhin/magnet-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/IvanSolomakhin/magnet-parser)
 
 ## Magnet-parser
-  Library for parsing and encoding [magnet link](https://en.wikipedia.org/wiki/Magnet_URI_scheme).  
+  Library for parsing and encoding [magnet links](https://en.wikipedia.org/wiki/Magnet_URI_scheme).  
   
   Fast and easy to use.  
   Written in TypeScript.  
