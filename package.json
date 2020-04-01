@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/IvanSolomakhin/magnet-parser#readme",
   "dependencies": {
-    "bencodec": "^2.1.1"
+    "bencodec": "^2.1.1",
+    "hi-base32": "^0.5.0"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
