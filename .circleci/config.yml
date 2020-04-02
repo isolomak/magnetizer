@@ -4,7 +4,7 @@ orbs:
   codecov: codecov/codecov@1.0.5
 
 defaults: &defaults
-  working_directory: ~/bencodec-repo
+  working_directory: ~/magnetizer-repo
   docker:
     - image: circleci/node:10.16.3
 
@@ -34,7 +34,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: ~/bencodec-repo
+          at: ~/magnetizer-repo
       - run:
           name: Test and collect code coverage
           command: npm test --ci
