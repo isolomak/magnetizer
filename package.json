@@ -1,6 +1,6 @@
 {
   "name": "magnetizer",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Library for decoding and encoding magnet links.",
   "main": "build/index.js",
   "scripts": {
