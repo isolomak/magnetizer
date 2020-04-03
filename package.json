@@ -11,14 +11,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IvanSolomakhin/magnet-parser.git"
+    "url": "git+https://github.com/IvanSolomakhin/magnetizer.git"
   },
+  "keywords": [
+    "magnet",
+    "magnet-uri",
+    "magnet-link",
+    "uri",
+    "link",
+    "torrent",
+    "bittorrent",
+    "parser",
+    "decoder",
+    "encoder"
+  ],
   "author": "isolomak",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/IvanSolomakhin/magnet-parser/issues"
+    "url": "https://github.com/IvanSolomakhin/magnetizer/issues"
   },
-  "homepage": "https://github.com/IvanSolomakhin/magnet-parser#readme",
+  "homepage": "https://github.com/IvanSolomakhin/magnetizer#readme",
   "dependencies": {
     "bencodec": "^2.1.1",
     "hi-base32": "^0.5.0"
