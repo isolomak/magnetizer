@@ -1,33 +1,7 @@
 import * as assert from 'assert';
 import { decode } from '../lib';
 
-// DISPLAY_NAME = 'dn',
-// LENGTH = 'xl',
-// INFO_HASH = 'xt',
-// WEB_SEED = 'ws',
-// ACCEPTABLE_SOURCE = 'as',
-// SOURCE = 'xs',
-// KEYWORD = 'kt',
-// MANIFEST = 'mt',
-// TRACKER = 'tr',
-
-
 describe('Decoding tests', () => {
-
-	// const testLink = 'magnet:?
-	// xt=urn:ed2k:354B15E68FB8F36D7CD88FF94116CDC1
-	// &xl=10826029
-	// &dn=mediawiki-1.15.1.tar.gz
-	// &xt=urn:tree:tiger:7N5OAMRNGMSSEUE3ORHOKWN4WWIQ5X4EBOOTLJY
-	// &xt=urn:sha1:XRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5
-	// &xt=urn:aich:7ZDRR3ZQW4JMHUQZUMJGQN2VNGLV3CVN
-	// &xt=urn:btih:QHQXPYWMACKDWKP47RRVIV7VOURXFE5Q
-	// &tr=http%3A%2F%2Ftracker.example.org%2Fannounce.php%3Fuk%3D1111111111%26
-	// &tr=wss%3A%2F%2Ftracker.webtorrent.io
-	// &as=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz
-	// &ws=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz
-	// &xs=http%3A%2F%2Fcache.example.org%2FXRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5
-	// &xs=dchub://example.org';
 
 	describe('Validation tests', () => {
 
@@ -165,6 +139,24 @@ describe('Decoding tests', () => {
 			] });
 		});
 
+	});
+
+	test('example test', () => {
+		const result = decode('magnet:?dn=test-name_for_magnet-link.tar.gz&xl=100500&xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&tr=http%3A%2F%2Ftracker.example.org%2Fannounce.php%3Fua%3D1111111111&tr=wss%3A%2F%2Ftracker.webtorrent.io&kt=martin+luther+king+mp3&ws=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz&as=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz&xs=http%3A%2F%2Fcache.example.org%2FXRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5&mt=http%3A%2F%2Fweblog.foo%2Fall-my-favorites.rss');
+		assert.deepStrictEqual(result, {
+			displayNames: [ 'test-name_for_magnet-link.tar.gz' ],
+			length: 100500,
+			infoHashes: [ 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ],
+			webSeeds: [ 'http://download.wikimedia.org/mediawiki/1.15/mediawiki-1.15.1.tar.gz' ],
+			acceptableSources: [ 'http://download.wikimedia.org/mediawiki/1.15/mediawiki-1.15.1.tar.gz' ],
+			sources: [ 'http://cache.example.org/XRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5' ],
+			keywords: [ 'martin', 'luther', 'king', 'mp3' ],
+			manifest: 'http://weblog.foo/all-my-favorites.rss',
+			trackers: [
+				'http://tracker.example.org/announce.php?ua=1111111111',
+				'wss://tracker.webtorrent.io',
+			],
+		});
 	});
 
 });
