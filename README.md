@@ -2,7 +2,7 @@
 [![NPM](https://nodei.co/npm/magnetizer.png)](https://npmjs.org/package/magnetizer)
 
 [![build](https://circleci.com/gh/IvanSolomakhin/magnetizer.svg?style=shield)](https://app.circleci.com/pipelines/github/IvanSolomakhin/magnetizer)
-[![codecov](https://codecov.io/gh/IvanSolomakhin/magnetizer/branch/master/graph/badge.svg)](https://codecov.io/gh/IvanSolomakhin/magnetizer)
+[![Coverage Status](https://coveralls.io/repos/github/IvanSolomakhin/magnetizer/badge.svg)](https://coveralls.io/github/IvanSolomakhin/magnetizer)
 
 ## Magnetizer
   Library for decoding and encoding [magnet links](https://en.wikipedia.org/wiki/Magnet_URI_scheme).  
