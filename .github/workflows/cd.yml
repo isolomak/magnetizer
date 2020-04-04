@@ -15,8 +15,24 @@ jobs:
       - run: npm ci
       - run: npm test
 
-  publish-npm:
+  publish-coverage:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npm i
+      - run: npm test
+
+      - name: coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    needs: [build, publish-coverage]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +46,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
   publish-gpr:
-    needs: build
+    needs: [build, publish-coverage]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
