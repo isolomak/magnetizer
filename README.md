@@ -1,7 +1,7 @@
 
 [![NPM](https://nodei.co/npm/magnetizer.png)](https://npmjs.org/package/magnetizer)
 
-[![build](https://circleci.com/gh/IvanSolomakhin/magnetizer.svg?style=shield)](https://app.circleci.com/pipelines/github/IvanSolomakhin/magnetizer)
+![ci](https://github.com/IvanSolomakhin/magnetizer/workflows/ci/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/IvanSolomakhin/magnetizer/badge.svg)](https://coveralls.io/github/IvanSolomakhin/magnetizer)
 
 ## Magnetizer
