@@ -3,8 +3,9 @@
 
 ![ci](https://github.com/IvanSolomakhin/magnetizer/workflows/ci/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/IvanSolomakhin/magnetizer/badge.svg)](https://coveralls.io/github/IvanSolomakhin/magnetizer)
+[![NPM Downloads](https://img.shields.io/npm/dt/magnetizer)](https://npmjs.org/package/magnetizer)
+[![NPM License](https://img.shields.io/npm/l/magnetizer)](LICENSE)
 
-## Magnetizer
   Library for decoding and encoding [magnet links](https://en.wikipedia.org/wiki/Magnet_URI_scheme).  
   
   Fast and easy to use.  
@@ -70,4 +71,4 @@
   ```
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
