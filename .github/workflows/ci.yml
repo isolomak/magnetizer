@@ -13,12 +13,13 @@ jobs:
         with:
           node-version: 12
 
-      - name: npm install
-      - run: npm ci
+      - name: install
+        run: npm ci
       
+      - name: build
+        run: npm run build
       - name: test
-      - run: npm run build
-      - run: npm test
+        run: npm test
         
       - name: coveralls
         uses: coverallsapp/github-action@master
