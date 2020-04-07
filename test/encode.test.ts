@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { encode } from '../lib';
+import { encode } from '../src';
 
 describe('Encoding tests', () => {
 

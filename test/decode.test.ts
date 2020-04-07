@@ -1,27 +1,27 @@
 import * as assert from 'assert';
-import { decode } from '../lib';
+import { decode } from '../src';
 
 describe('Decoding tests', () => {
 
 	describe('Validation tests', () => {
 
 		test('should return empty object on empty string', () => {
-			assert.deepStrictEqual(decode(''), {});
+			assert.deepStrictEqual(decode(''), { });
 		});
 
 		test('should return empty object if magnet identifier is invalid', () => {
-			assert.deepStrictEqual(decode('asd'), {});
-			assert.deepStrictEqual(decode('magn'), {});
-			assert.deepStrictEqual(decode('magnet'), {});
-			assert.deepStrictEqual(decode('magnet:'), {});
+			assert.deepStrictEqual(decode('asd'), { });
+			assert.deepStrictEqual(decode('magn'), { });
+			assert.deepStrictEqual(decode('magnet'), { });
+			assert.deepStrictEqual(decode('magnet:'), { });
 		});
 
 		test('should return empty object if magnet link without parameters', () => {
-			assert.deepStrictEqual(decode('magnet:?'), {});
+			assert.deepStrictEqual(decode('magnet:?'), { });
 		});
 
 		test('should ignore invalid parameters', () => {
-			assert.deepStrictEqual(decode('magnet:?bar=baz&cow=moo'), {});
+			assert.deepStrictEqual(decode('magnet:?bar=baz&cow=moo'), { });
 		});
 
 	});
