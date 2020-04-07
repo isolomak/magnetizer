@@ -8,16 +8,26 @@ import { HASH, MAGNET_PARAMETER, MagnetURI } from '../types';
 
 export default class MagnetDecoder {
 
+	/**
+	 * Split megnet uri
+	 */
 	private static _splitMagnetURI(magnetURI: string): Array<string>  {
 		return magnetURI.replace('magnet:?', '').split('&');
 	}
 
 	private readonly _decodedMagnetURI: MagnetURI;
 
+	/**
+	 * Constructor
+	 */
 	constructor() {
 		this._decodedMagnetURI = { };
 	}
 
+
+	/**
+	 * Decode magnet uri
+	 */
 	public decode(magnetURI: string): MagnetURI {
 		if (!magnetURI.startsWith('magnet:?')) {
 			return this._decodedMagnetURI;
@@ -32,6 +42,9 @@ export default class MagnetDecoder {
 		return this._decodedMagnetURI;
 	}
 
+	/**
+	 * Decode parameter
+	 */
 	private _decodeParameter(param: string) {
 		const [ key, value ] = param.split('=');
 
@@ -63,6 +76,9 @@ export default class MagnetDecoder {
 		}
 	}
 
+	/**
+	 * Add display name
+	 */
 	private _addDisplayName(file: string) {
 		this._decodedMagnetURI.displayNames = this._decodedMagnetURI.displayNames || [];
 		this._decodedMagnetURI.displayNames.push(
@@ -70,10 +86,16 @@ export default class MagnetDecoder {
 		);
 	}
 
+	/**
+	 * Add length
+	 */
 	private _addLength(length: string) {
 		this._decodedMagnetURI.length = parseInt(length, 10);
 	}
 
+	/**
+	 * Add infoHash
+	 */
 	private _addInfoHash(urnValue: string) {
 		this._decodedMagnetURI.infoHashes = this._decodedMagnetURI.infoHashes || [];
 
@@ -99,6 +121,9 @@ export default class MagnetDecoder {
 
 	}
 
+	/**
+	 * Add tracker
+	 */
 	private _addTracker(tracker: string) {
 		this._decodedMagnetURI.trackers = this._decodedMagnetURI.trackers || [];
 		this._decodedMagnetURI.trackers.push(
@@ -106,10 +131,16 @@ export default class MagnetDecoder {
 		);
 	}
 
+	/**
+	 * Add keywords
+	 */
 	private _addKeywords(keywords: string) {
 		this._decodedMagnetURI.keywords = decodeURIComponent(keywords).split('+');
 	}
 
+	/**
+	 * Add web seed
+	 */
 	private _addWebSeed(webSeed: string) {
 		this._decodedMagnetURI.webSeeds = this._decodedMagnetURI.webSeeds || [];
 		this._decodedMagnetURI.webSeeds.push(
@@ -117,6 +148,9 @@ export default class MagnetDecoder {
 		);
 	}
 
+	/**
+	 * Add acceptable source
+	 */
 	private _addAcceptableSource(source: string) {
 		this._decodedMagnetURI.acceptableSources = this._decodedMagnetURI.acceptableSources || [];
 		this._decodedMagnetURI.acceptableSources.push(
@@ -124,6 +158,9 @@ export default class MagnetDecoder {
 		);
 	}
 
+	/**
+	 * Add source
+	 */
 	private _addSource(source: string) {
 		this._decodedMagnetURI.sources = this._decodedMagnetURI.sources || [];
 		this._decodedMagnetURI.sources.push(
@@ -131,6 +168,9 @@ export default class MagnetDecoder {
 		);
 	}
 
+	/**
+	 * Add manifest
+	 */
 	private _addManifest(manifest: string) {
 		this._decodedMagnetURI.manifest = decodeURIComponent(manifest);
 	}
