@@ -5,11 +5,17 @@ export default class MagnetEncoder {
 	private _data: MagnetURI;
 	private _encodedParameters: Array<string>;
 
+	/**
+	 * Constructor
+	 */
 	constructor(data: MagnetURI) {
 		this._data = data;
 		this._encodedParameters = [];
 	}
 
+	/**
+	 * Encode magnet uri
+	 */
 	public encode() {
 		this._encodeDisplayName();
 		this._encodeLength();
@@ -24,6 +30,9 @@ export default class MagnetEncoder {
 		return `magnet:?${this._encodedParameters.join('&')}`;
 	}
 
+	/**
+	 * Encode display name
+	 */
 	private _encodeDisplayName() {
 		if (!this._data.displayNames) {
 			return ;
@@ -36,6 +45,9 @@ export default class MagnetEncoder {
 		}
 	}
 
+	/**
+	 * Encode length
+	 */
 	private _encodeLength() {
 		if (this._data.length === null || this._data.length === undefined) {
 			return ;
@@ -46,6 +58,9 @@ export default class MagnetEncoder {
 		);
 	}
 
+	/**
+	 * Encode info hash
+	 */
 	private _encodeInfoHash() {
 		if (!this._data.infoHashes) {
 			return ;
@@ -58,6 +73,9 @@ export default class MagnetEncoder {
 		}
 	}
 
+	/**
+	 * Encode encode tracker
+	 */
 	private _encodeTracker() {
 		if (!this._data.trackers) {
 			return ;
@@ -70,6 +88,9 @@ export default class MagnetEncoder {
 		}
 	}
 
+	/**
+	 * Encode keywords
+	 */
 	private _encodeKeywords() {
 		if (!this._data.keywords || !this._data.keywords.length) {
 			return ;
@@ -80,6 +101,9 @@ export default class MagnetEncoder {
 		);
 	}
 
+	/**
+	 * Encode web seed
+	 */
 	private _encodeWebSeed() {
 		if (!this._data.webSeeds) {
 			return ;
@@ -92,6 +116,9 @@ export default class MagnetEncoder {
 		}
 	}
 
+	/**
+	 * Encode acceptable source
+	 */
 	private _encodeAcceptableSource() {
 		if (!this._data.acceptableSources) {
 			return ;
@@ -104,6 +131,9 @@ export default class MagnetEncoder {
 		}
 	}
 
+	/**
+	 * Encode source
+	 */
 	private _encodeSource() {
 		if (!this._data.sources) {
 			return ;
@@ -116,6 +146,9 @@ export default class MagnetEncoder {
 		}
 	}
 
+	/**
+	 * Encode manifest
+	 */
 	private _encodeManifest() {
 		if (!this._data.manifest) {
 			return ;
