@@ -2,12 +2,13 @@
   "name": "magnetizer",
   "version": "1.0.4",
   "description": "Library for decoding and encoding magnet links.",
-  "main": "build/index.js",
+  "main": "src/index.js",
   "scripts": {
     "build": "./node_modules/.bin/tsc",
+    "lint": "./node_modules/tslint/bin/tslint ./src/**/*.ts",
     "test": "./node_modules/.bin/jest --runInBand",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm run lint && npm test"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,7 @@
   },
   "homepage": "https://github.com/IvanSolomakhin/magnetizer#readme",
   "dependencies": {
-    "bencodec": "^2.1.1",
+    "bencodec": "^2.3.0",
     "hi-base32": "^0.5.0"
   },
   "devDependencies": {
@@ -40,10 +41,12 @@
     "@types/node": "^13.9.8",
     "jest": "^25.2.4",
     "ts-jest": "^25.3.0",
+    "tslint": "^6.1.1",
     "typescript": "^3.8.3"
   },
-  "types": "./build/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
-    "build/**/*"
+    "src/**/*",
+    "LICENSE"
   ]
 }

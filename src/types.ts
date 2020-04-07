@@ -26,13 +26,13 @@ export enum MAGNET_PARAMETER {
 }
 
 export interface MagnetURI {
-	displayNames?: string[]; // a filename to display to the user, for convenience
+	displayNames?: Array<string>; // a filename to display to the user, for convenience
 	length?: number; // size in bytes
-	infoHashes?: string[]; // URN containing file hash
-	webSeeds?: string[]; // the payload data served over HTTP(S)
-	acceptableSources?: string[]; // web link to the file online
-	sources?: string[]; // P2P link identified by a content-hash
-	keywords?: string[]; // a more general search, specifying keywords, rather than a particular file
+	infoHashes?: Array<string>; // URN containing file hash
+	webSeeds?: Array<string>; // the payload data served over HTTP(S)
+	acceptableSources?: Array<string>; // web link to the file online
+	sources?: Array<string>; // P2P link identified by a content-hash
+	keywords?: Array<string>; // a more general search, specifying keywords, rather than a particular file
 	manifest?: string; // link to the metafile that contains a list of magneto (MAGMA – MAGnet MAnifest)
-	trackers?: string[]; // tracker URL for BitTorrent downloads
+	trackers?: Array<string>; // tracker URL for BitTorrent downloads
 }

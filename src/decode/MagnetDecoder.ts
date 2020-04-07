@@ -1,18 +1,21 @@
 import * as base32 from 'hi-base32';
-import { HASH, MAGNET_PARAMETER, MagnetURI } from './types';
+import { HASH, MAGNET_PARAMETER, MagnetURI } from '../types';
 
-// TODO: The standard also allows for multiple parameters of the same type to be used by appending ".1", ".2", etc. to the parameter name, e.g.: magnet:?xt.1=urn:sha1:YNCKHTQCWBTRNJIV4WNAE52SJUQCZO5C&xt.2=urn:sha1:TXGCZQTH26NL6OUQAJJPFALHG2LTGBC7
+/*
+	TODO: The standard also allows for multiple parameters of the same type to be used by appending ".1", ".2", etc. to the parameter name,
+	 e.g.: magnet:?xt.1=urn:sha1:YNCKHTQCWBTRNJIV4WNAE52SJUQCZO5C&xt.2=urn:sha1:TXGCZQTH26NL6OUQAJJPFALHG2LTGBC7
+ */
 
-class MagnetDecoder {
+export default class MagnetDecoder {
 
-	private static _splitMagnetURI(magnetURI: string): string[]  {
+	private static _splitMagnetURI(magnetURI: string): Array<string>  {
 		return magnetURI.replace('magnet:?', '').split('&');
 	}
 
 	private readonly _decodedMagnetURI: MagnetURI;
 
 	constructor() {
-		this._decodedMagnetURI = {};
+		this._decodedMagnetURI = { };
 	}
 
 	public decode(magnetURI: string): MagnetURI {
@@ -68,7 +71,7 @@ class MagnetDecoder {
 	}
 
 	private _addLength(length: string) {
-		this._decodedMagnetURI.length = parseInt(length);
+		this._decodedMagnetURI.length = parseInt(length, 10);
 	}
 
 	private _addInfoHash(urnValue: string) {
@@ -133,8 +136,3 @@ class MagnetDecoder {
 	}
 
 }
-
-export function decode(magnetURI: string) {
-	return new MagnetDecoder().decode(magnetURI);
-}
-export default decode;

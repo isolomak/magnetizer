@@ -1,9 +1,9 @@
-import { MAGNET_PARAMETER, MagnetURI } from './types';
+import { MAGNET_PARAMETER, MagnetURI } from '../types';
 
-class MagnetEncoder {
+export default class MagnetEncoder {
 
 	private _data: MagnetURI;
-	private _encodedParameters: string[];
+	private _encodedParameters: Array<string>;
 
 	constructor(data: MagnetURI) {
 		this._data = data;
@@ -127,8 +127,3 @@ class MagnetEncoder {
 	}
 
 }
-
-export function encode(data: MagnetURI) {
-	return new MagnetEncoder(data).encode();
-}
-export default encode;
