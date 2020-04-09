@@ -21,10 +21,13 @@
     "uri",
     "link",
     "torrent",
+    ".torrent",
     "bittorrent",
     "parser",
     "decoder",
-    "encoder"
+    "encoder",
+    "create",
+    "parse"
   ],
   "author": "isolomak",
   "license": "MIT",
