@@ -27,7 +27,8 @@
     "decoder",
     "encoder",
     "create",
-    "parse"
+    "parse",
+    "generate"
   ],
   "author": "isolomak",
   "license": "MIT",
