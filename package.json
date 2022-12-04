@@ -52,7 +52,7 @@
   },
   "types": "./lib/index.d.ts",
   "files": [
-    "src/**/*",
-    "LICENSE"
+    "lib/**/*",
+    "LICENSE.md"
   ]
 }
