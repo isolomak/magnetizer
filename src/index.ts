@@ -1,14 +1,16 @@
-import { MagnetURI } from './types';
 import MagnetDecoder from './decode/MagnetDecoder';
 import MagnetEncoder from './encode/MagnetEncoder';
+import { IMagnetURI } from './types';
 
-function decode(magnetURI: string) {
-	return new MagnetDecoder().decode(magnetURI);
+function decode(magnetURI: string): IMagnetURI {
+	const magnetDecoder = new MagnetDecoder();
+	return magnetDecoder.decode(magnetURI);
 }
 
-function encode(data: MagnetURI) {
-	return new MagnetEncoder(data).encode();
+function encode(data: Partial<IMagnetURI>): string {
+	const magnetEncoder = new MagnetEncoder();
+	return magnetEncoder.encode(data);
 }
 
-export { decode, encode };
+export { decode, encode, IMagnetURI };
 export default { decode, encode };

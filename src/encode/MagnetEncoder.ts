@@ -1,31 +1,29 @@
-import { MAGNET_PARAMETER, MagnetURI } from '../types';
+import { IMagnetURI, MAGNET_PARAMETER } from '../types';
 
 export default class MagnetEncoder {
 
-	private _data: MagnetURI;
 	private _encodedParameters: Array<string>;
 
 	/**
 	 * Constructor
 	 */
-	constructor(data: MagnetURI) {
-		this._data = data;
+	constructor() {
 		this._encodedParameters = [];
 	}
 
 	/**
 	 * Encode magnet uri
 	 */
-	public encode() {
-		this._encodeDisplayName();
-		this._encodeLength();
-		this._encodeInfoHash();
-		this._encodeTracker();
-		this._encodeKeywords();
-		this._encodeWebSeed();
-		this._encodeAcceptableSource();
-		this._encodeSource();
-		this._encodeManifest();
+	public encode(data: Partial<IMagnetURI>): string {
+		this._encodeDisplayName(data);
+		this._encodeLength(data);
+		this._encodeInfoHashes(data);
+		this._encodeTrackers(data);
+		this._encodeKeywords(data);
+		this._encodeWebSeeds(data);
+		this._encodeAcceptableSources(data);
+		this._encodeSources(data);
+		this._encodeManifest(data);
 
 		return `magnet:?${this._encodedParameters.join('&')}`;
 	}
@@ -33,129 +31,150 @@ export default class MagnetEncoder {
 	/**
 	 * Encode display name
 	 */
-	private _encodeDisplayName() {
-		if (!this._data.displayNames) {
+	private _encodeDisplayName(data: Partial<IMagnetURI>): void {
+		const displayName = data.displayName?.trim();
+		
+		if (!displayName) {
 			return ;
 		}
 
-		for (const displayName of this._data.displayNames) {
-			this._encodedParameters.push(
-				`${MAGNET_PARAMETER.DISPLAY_NAME}=${encodeURIComponent(displayName)}`
-			);
-		}
+		this._encodedParameters.push(
+			`${MAGNET_PARAMETER.DISPLAY_NAME}=${encodeURIComponent(displayName)}`
+		);
 	}
 
 	/**
 	 * Encode length
 	 */
-	private _encodeLength() {
-		if (this._data.length === null || this._data.length === undefined) {
+	private _encodeLength(data: Partial<IMagnetURI>): void {
+		const length = data.length;
+
+		if (length === null || length === undefined) {
 			return ;
 		}
 
 		this._encodedParameters.push(
-			`${MAGNET_PARAMETER.LENGTH}=${this._data.length}`
+			`${MAGNET_PARAMETER.LENGTH}=${length}`
 		);
 	}
 
 	/**
-	 * Encode info hash
+	 * Encode info hashes
 	 */
-	private _encodeInfoHash() {
-		if (!this._data.infoHashes) {
-			return ;
+	private _encodeInfoHashes(data: Partial<IMagnetURI>): void {
+		const encodedHashesSet = new Set<string>();
+
+		for (const infoHash of data.infoHashes || []) {
+			const providedInfoHash = Buffer.isBuffer(infoHash)
+				? infoHash.toString('hex')
+				: infoHash;
+
+			if (!providedInfoHash.startsWith('urn:')) {
+				encodedHashesSet.add(
+					`${MAGNET_PARAMETER.INFO_HASH}=urn:btih:${providedInfoHash}`
+				);
+			}
+			else {
+				encodedHashesSet.add(
+					`${MAGNET_PARAMETER.INFO_HASH}=${providedInfoHash}`
+				);	
+			}
 		}
 
-		for (const infoHash of this._data.infoHashes) {
-			this._encodedParameters.push(
-				`${MAGNET_PARAMETER.INFO_HASH}=${infoHash}`
-			);
-		}
+		this._encodedParameters.push(...Array.from(encodedHashesSet));
 	}
 
 	/**
-	 * Encode encode tracker
+	 * Encode trackers
 	 */
-	private _encodeTracker() {
-		if (!this._data.trackers) {
-			return ;
-		}
+	private _encodeTrackers(data: Partial<IMagnetURI>): void {
+		const encodedTrackersSet = new Set<string>();
 
-		for (const tracker of this._data.trackers) {
-			this._encodedParameters.push(
-				`${MAGNET_PARAMETER.TRACKER}=${encodeURIComponent(tracker)}`
+		for (const trackerUrl of data.trackers || []) {
+			encodedTrackersSet.add(
+				`${MAGNET_PARAMETER.TRACKER}=${encodeURIComponent(trackerUrl)}`
 			);
 		}
+
+		this._encodedParameters.push(...Array.from(encodedTrackersSet));
 	}
 
 	/**
 	 * Encode keywords
 	 */
-	private _encodeKeywords() {
-		if (!this._data.keywords || !this._data.keywords.length) {
-			return ;
+	private _encodeKeywords(data: Partial<IMagnetURI>): void {
+		const encodedKeywords = new Set<string>();
+
+		for (const keyword of data.keywords || []) {
+			encodedKeywords.add(
+				encodeURIComponent(keyword)	
+			);
 		}
 
-		this._encodedParameters.push(
-			`${MAGNET_PARAMETER.KEYWORD}=${this._data.keywords.map(encodeURIComponent).join('+')}`
-		);
+		if (encodedKeywords.size) {
+			this._encodedParameters.push(
+				`${MAGNET_PARAMETER.KEYWORD}=${Array.from(encodedKeywords).join('+')}`
+			);
+		}
 	}
 
 	/**
-	 * Encode web seed
+	 * Encode web seeds
 	 */
-	private _encodeWebSeed() {
-		if (!this._data.webSeeds) {
-			return ;
-		}
+	private _encodeWebSeeds(data: Partial<IMagnetURI>): void {
+		const encodedWebSeeds = new Set<string>();
 
-		for (const webSeed of this._data.webSeeds) {
-			this._encodedParameters.push(
+		for (const webSeed of data.webSeeds || []) {
+			encodedWebSeeds.add(
 				`${MAGNET_PARAMETER.WEB_SEED}=${encodeURIComponent(webSeed)}`
 			);
 		}
+
+		this._encodedParameters.push(...Array.from(encodedWebSeeds));
 	}
 
 	/**
-	 * Encode acceptable source
+	 * Encode acceptable sources
 	 */
-	private _encodeAcceptableSource() {
-		if (!this._data.acceptableSources) {
-			return ;
-		}
+	private _encodeAcceptableSources(data: Partial<IMagnetURI>): void {
+		const encodedAcceptableSources = new Set<string>();
 
-		for (const source of this._data.acceptableSources) {
-			this._encodedParameters.push(
+		for (const source of data.acceptableSources || []) {
+			encodedAcceptableSources.add(
 				`${MAGNET_PARAMETER.ACCEPTABLE_SOURCE}=${encodeURIComponent(source)}`
 			);
 		}
+
+		this._encodedParameters.push(...Array.from(encodedAcceptableSources));
 	}
 
 	/**
-	 * Encode source
+	 * Encode sources
 	 */
-	private _encodeSource() {
-		if (!this._data.sources) {
-			return ;
-		}
+	private _encodeSources(data: Partial<IMagnetURI>): void {
+		const encodedSources = new Set<string>();
 
-		for (const source of this._data.sources) {
-			this._encodedParameters.push(
+		for (const source of data.sources || []) {
+			encodedSources.add(
 				`${MAGNET_PARAMETER.SOURCE}=${encodeURIComponent(source)}`
 			);
 		}
+
+		this._encodedParameters.push(...Array.from(encodedSources));
 	}
 
 	/**
 	 * Encode manifest
 	 */
-	private _encodeManifest() {
-		if (!this._data.manifest) {
+	private _encodeManifest(data: Partial<IMagnetURI>): void {
+		const manifest = data.manifest?.trim();
+
+		if (!manifest) {
 			return ;
 		}
 
 		this._encodedParameters.push(
-			`${MAGNET_PARAMETER.MANIFEST}=${encodeURIComponent(this._data.manifest)}`
+			`${MAGNET_PARAMETER.MANIFEST}=${encodeURIComponent(manifest)}`
 		);
 	}
 
