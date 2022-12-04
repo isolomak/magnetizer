@@ -6,7 +6,7 @@ describe('Encoding tests', () => {
 	describe('Display name tests', () => {
 
 		test('should encode display name', () => {
-			const result = encode({ displayNames: [ 'test-name_for_magnet-link.tar.gz' ] });
+			const result = encode({ displayName: 'test-name_for_magnet-link.tar.gz' });
 			assert.deepStrictEqual(result, 'magnet:?dn=test-name_for_magnet-link.tar.gz');
 		});
 
@@ -23,8 +23,18 @@ describe('Encoding tests', () => {
 
 	describe('Info hash tests' , () => {
 
-		test('should encode BitTorrent info hash', () => {
+		test('should encode BitTorrent info hash with specified urn protocol ', () => {
 			const result = encode({ infoHashes: [ 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+		});
+
+		test('should encode BitTorrent info hash without specified urn protocol', () => {
+			const result = encode({ infoHashes: [ 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+		});
+
+		test('should encode BitTorrent info hash from buffer', () => {
+			const result = encode({ infoHashes: [ Buffer.from('c12fe1c06bba254a9dc9f519b335aa7c1367a88a', 'hex') ] });
 			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
 		});
 
@@ -92,20 +102,20 @@ describe('Encoding tests', () => {
 
 	test('example test', () => {
 		const result = encode({
-			displayNames: [ 'test-name_for_magnet-link.tar.gz' ],
+			displayName: 'test-name_for_magnet-link.tar.gz',
 			length: 100500,
-			infoHashes: [ 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ],
-			webSeeds: [ 'http://download.wikimedia.org/mediawiki/1.15/mediawiki-1.15.1.tar.gz' ],
-			acceptableSources: [ 'http://download.wikimedia.org/mediawiki/1.15/mediawiki-1.15.1.tar.gz' ],
-			sources: [ 'http://cache.example.org/XRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5' ],
-			keywords: [ 'martin', 'luther', 'king', 'mp3' ],
-			manifest: 'http://weblog.foo/all-my-favorites.rss',
+			infoHashes: [ 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ],
+			webSeeds: [ 'http://example.com/test-name_for_magnet-link.tar.gz' ],
+			acceptableSources: [ 'http://example.com/test-name_for_magnet-link.tar.gz' ],
+			sources: [ 'http://cache.example.com/c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ],
+			keywords: [ 'test-name_for_magnet-link', 'tar', 'gz' ],
+			manifest: 'http://example.com/manifest',
 			trackers: [
-				'http://tracker.example.org/announce.php?ua=1111111111',
+				'http://tracker.example.com/announce.php?ua=1111111111',
 				'wss://tracker.webtorrent.io',
 			],
 		});
-		assert.deepStrictEqual(result, 'magnet:?dn=test-name_for_magnet-link.tar.gz&xl=100500&xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&tr=http%3A%2F%2Ftracker.example.org%2Fannounce.php%3Fua%3D1111111111&tr=wss%3A%2F%2Ftracker.webtorrent.io&kt=martin+luther+king+mp3&ws=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz&as=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz&xs=http%3A%2F%2Fcache.example.org%2FXRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5&mt=http%3A%2F%2Fweblog.foo%2Fall-my-favorites.rss');
+		assert.deepStrictEqual(result, 'magnet:?dn=test-name_for_magnet-link.tar.gz&xl=100500&xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&tr=http%3A%2F%2Ftracker.example.com%2Fannounce.php%3Fua%3D1111111111&tr=wss%3A%2F%2Ftracker.webtorrent.io&kt=test-name_for_magnet-link+tar+gz&ws=http%3A%2F%2Fexample.com%2Ftest-name_for_magnet-link.tar.gz&as=http%3A%2F%2Fexample.com%2Ftest-name_for_magnet-link.tar.gz&xs=http%3A%2F%2Fcache.example.com%2Fc12fe1c06bba254a9dc9f519b335aa7c1367a88a&mt=http%3A%2F%2Fexample.com%2Fmanifest');
 	});
 
 });

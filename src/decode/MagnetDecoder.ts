@@ -1,51 +1,52 @@
 import * as base32 from 'hi-base32';
-import { HASH, MAGNET_PARAMETER, MagnetURI } from '../types';
+import { IMagnetURI, MAGNET_INFO_HASH_TYPE, MAGNET_PARAMETER } from '../types';
 
-/*
-	TODO: The standard also allows for multiple parameters of the same type to be used by appending ".1", ".2", etc. to the parameter name,
-	 e.g.: magnet:?xt.1=urn:sha1:YNCKHTQCWBTRNJIV4WNAE52SJUQCZO5C&xt.2=urn:sha1:TXGCZQTH26NL6OUQAJJPFALHG2LTGBC7
- */
+interface IMagnetDecodeURI {
+	displayName: string | null;
+	length: number | null;
+	manifest: string | null;
+	infoHashes: Set<string>;
+	webSeeds: Set<string>;
+	acceptableSources: Set<string>;
+	sources: Set<string>;
+	keywords: Set<string>;
+	trackers: Set<string>;
+}
 
 export default class MagnetDecoder {
 
-	/**
-	 * Split megnet uri
-	 */
-	private static _splitMagnetURI(magnetURI: string): Array<string>  {
-		return magnetURI.replace('magnet:?', '').split('&');
-	}
-
-	private readonly _decodedMagnetURI: MagnetURI;
+	private _decodedMagnetURI: IMagnetDecodeURI;
 
 	/**
 	 * Constructor
 	 */
 	constructor() {
-		this._decodedMagnetURI = { };
+		this._decodedMagnetURI = MagnetDecoder._reset();
 	}
-
 
 	/**
 	 * Decode magnet uri
 	 */
-	public decode(magnetURI: string): MagnetURI {
+	public decode(magnetURI: string): IMagnetURI {
+		this._decodedMagnetURI = MagnetDecoder._reset();
+
 		if (!magnetURI.startsWith('magnet:?')) {
-			return this._decodedMagnetURI;
+			return this._getResult();
 		}
 
-		const parametersList = MagnetDecoder._splitMagnetURI(magnetURI);
+		const parametersList = magnetURI.replace('magnet:?', '').split('&');
 
 		for (const parameter of parametersList) {
 			this._decodeParameter(parameter);
 		}
 
-		return this._decodedMagnetURI;
+		return this._getResult();
 	}
 
 	/**
 	 * Decode parameter
 	 */
-	private _decodeParameter(param: string) {
+	private _decodeParameter(param: string): void {
 		const [ key, value ] = param.split('=');
 
 		if (!key || !value) {
@@ -79,40 +80,35 @@ export default class MagnetDecoder {
 	/**
 	 * Add display name
 	 */
-	private _addDisplayName(file: string) {
-		this._decodedMagnetURI.displayNames = this._decodedMagnetURI.displayNames || [];
-		this._decodedMagnetURI.displayNames.push(
-			decodeURIComponent(file).replace(/\+/g, ' ')
-		);
+	private _addDisplayName(file: string): void {
+		this._decodedMagnetURI.displayName = decodeURIComponent(file).replace(/\+/g, ' ');
 	}
 
 	/**
 	 * Add length
 	 */
-	private _addLength(length: string) {
+	private _addLength(length: string): void {
 		this._decodedMagnetURI.length = parseInt(length, 10);
 	}
 
 	/**
 	 * Add infoHash
 	 */
-	private _addInfoHash(urnValue: string) {
-		this._decodedMagnetURI.infoHashes = this._decodedMagnetURI.infoHashes || [];
-
+	private _addInfoHash(urnValue: string): void {
 		const [ urn, type, hash ] = urnValue.split(':');
 
 		if (urn !== 'urn') {
 			return ;
 		}
 
-		if (type === HASH.BIT_TORRENT_INFO_HASH) {
+		if (type === MAGNET_INFO_HASH_TYPE.BIT_TORRENT_INFO_HASH) {
 			if (hash.length === 40) {
-				this._decodedMagnetURI.infoHashes.push(
+				this._decodedMagnetURI.infoHashes.add(
 					`${urn}:${type}:${hash.toLowerCase()}`
 				);
 			}
 			if (hash.length === 32) {
-				this._decodedMagnetURI.infoHashes.push(
+				this._decodedMagnetURI.infoHashes.add(
 					`${urn}:${type}:${Buffer.from(base32.decode.asBytes(hash)).toString('hex')}`
 				);
 			}
@@ -124,9 +120,8 @@ export default class MagnetDecoder {
 	/**
 	 * Add tracker
 	 */
-	private _addTracker(tracker: string) {
-		this._decodedMagnetURI.trackers = this._decodedMagnetURI.trackers || [];
-		this._decodedMagnetURI.trackers.push(
+	private _addTracker(tracker: string): void {
+		this._decodedMagnetURI.trackers.add(
 			decodeURIComponent(tracker)
 		);
 	}
@@ -134,16 +129,19 @@ export default class MagnetDecoder {
 	/**
 	 * Add keywords
 	 */
-	private _addKeywords(keywords: string) {
-		this._decodedMagnetURI.keywords = decodeURIComponent(keywords).split('+');
+	private _addKeywords(keywords: string): void {
+		const decodedKeywords = decodeURIComponent(keywords).split('+');
+
+		for (const keyword of decodedKeywords) {
+			this._decodedMagnetURI.keywords.add(keyword);
+		}
 	}
 
 	/**
 	 * Add web seed
 	 */
-	private _addWebSeed(webSeed: string) {
-		this._decodedMagnetURI.webSeeds = this._decodedMagnetURI.webSeeds || [];
-		this._decodedMagnetURI.webSeeds.push(
+	private _addWebSeed(webSeed: string): void {
+		this._decodedMagnetURI.webSeeds.add(
 			decodeURIComponent(webSeed)
 		);
 	}
@@ -151,9 +149,8 @@ export default class MagnetDecoder {
 	/**
 	 * Add acceptable source
 	 */
-	private _addAcceptableSource(source: string) {
-		this._decodedMagnetURI.acceptableSources = this._decodedMagnetURI.acceptableSources || [];
-		this._decodedMagnetURI.acceptableSources.push(
+	private _addAcceptableSource(source: string): void {
+		this._decodedMagnetURI.acceptableSources.add(
 			decodeURIComponent(source)
 		);
 	}
@@ -161,9 +158,8 @@ export default class MagnetDecoder {
 	/**
 	 * Add source
 	 */
-	private _addSource(source: string) {
-		this._decodedMagnetURI.sources = this._decodedMagnetURI.sources || [];
-		this._decodedMagnetURI.sources.push(
+	private _addSource(source: string): void {
+		this._decodedMagnetURI.sources.add(
 			decodeURIComponent(source)
 		);
 	}
@@ -171,8 +167,36 @@ export default class MagnetDecoder {
 	/**
 	 * Add manifest
 	 */
-	private _addManifest(manifest: string) {
+	private _addManifest(manifest: string): void {
 		this._decodedMagnetURI.manifest = decodeURIComponent(manifest);
+	}
+
+	private static _reset(): IMagnetDecodeURI {
+		return {
+			displayName: null,
+			length: null,
+			infoHashes: new Set(),
+			webSeeds: new Set(),
+			acceptableSources: new Set(),
+			sources: new Set(),
+			keywords: new Set(),
+			manifest: null,
+			trackers: new Set(),
+		};
+	}
+
+	private _getResult(): IMagnetURI {
+		return {
+			displayName: this._decodedMagnetURI.displayName,
+			length: this._decodedMagnetURI.length,
+			manifest: this._decodedMagnetURI.manifest,
+			infoHashes: Array.from(this._decodedMagnetURI.infoHashes),
+			webSeeds: Array.from(this._decodedMagnetURI.webSeeds),
+			acceptableSources: Array.from(this._decodedMagnetURI.acceptableSources),
+			sources: Array.from(this._decodedMagnetURI.sources),
+			keywords: Array.from(this._decodedMagnetURI.keywords),
+			trackers: Array.from(this._decodedMagnetURI.trackers),
+		};
 	}
 
 }

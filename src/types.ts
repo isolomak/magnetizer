@@ -1,8 +1,5 @@
-/**
- * https://en.wikipedia.org/wiki/Magnet_URI_scheme
- */
 
-export enum HASH {
+export enum MAGNET_INFO_HASH_TYPE {
 	TIGER_TREE_HASH = 'tree', // TODO
 	SECURE_HASH_ALGORITHM_1 = 'sha1', // TODO
 	BIT_PRINT = 'bitprint', // TODO
@@ -25,14 +22,45 @@ export enum MAGNET_PARAMETER {
 	TRACKER = 'tr',
 }
 
-export interface MagnetURI {
-	displayNames?: Array<string>; // a filename to display to the user, for convenience
-	length?: number; // size in bytes
-	infoHashes?: Array<string>; // URN containing file hash
-	webSeeds?: Array<string>; // the payload data served over HTTP(S)
-	acceptableSources?: Array<string>; // web link to the file online
-	sources?: Array<string>; // P2P link identified by a content-hash
-	keywords?: Array<string>; // a more general search, specifying keywords, rather than a particular file
-	manifest?: string; // link to the metafile that contains a list of magneto (MAGMA – MAGnet MAnifest)
-	trackers?: Array<string>; // tracker URL for BitTorrent downloads
+/**
+ * Magnet URI scheme  
+ * wiki https://en.wikipedia.org/wiki/Magnet_URI_scheme
+ */
+export interface IMagnetURI {
+	/**
+	 * A filename to display to the user, for convenience
+	 */
+	displayName: string | null;
+	/**
+	 * Size in bytes
+	 */
+	length: number | null;
+	/** 
+	 * URN containing file hash
+	 */
+	infoHashes: Array<string | Buffer>;
+	/** 
+	 * the payload data served over HTTP(S)
+	 */
+	webSeeds: Array<string>;
+	/** 
+	 * Web link to the file online
+	 */
+	acceptableSources: Array<string>;
+	/** 
+	 * P2P link identified by a content-hash
+	 */
+	sources: Array<string>;
+	/** 
+	 * A more general search, specifying keywords, rather than a particular file
+	 */
+	keywords: Array<string>;
+	/** 
+	 * Link to the metafile that contains a list of magneto (MAGMA – MAGnet MAnifest)
+	 */
+	manifest: string | null;
+	/** 
+	 * Tracker URL for BitTorrent downloads
+	 */
+	trackers: Array<string>;
 }
