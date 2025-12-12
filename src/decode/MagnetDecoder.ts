@@ -88,7 +88,10 @@ export default class MagnetDecoder {
 	 * Add length
 	 */
 	private _addLength(length: string): void {
-		this._decodedMagnetURI.length = parseInt(length, 10);
+		const parsed = parseInt(length, 10);
+		if (!isNaN(parsed)) {
+			this._decodedMagnetURI.length = parsed;
+		}
 	}
 
 	/**
