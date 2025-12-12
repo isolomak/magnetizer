@@ -1,5 +1,5 @@
-import * as base32 from 'hi-base32';
 import { IMagnetURI, MAGNET_INFO_HASH_TYPE, MAGNET_PARAMETER } from '../types';
+import { base32DecodeToHex } from '../utils/base32';
 
 interface IMagnetDecodeURI {
 	displayName: string | null;
@@ -115,7 +115,7 @@ export default class MagnetDecoder {
 			}
 			if (hash.length === 32) {
 				this._decodedMagnetURI.infoHashes.add(
-					`${urn}:${type}:${Buffer.from(base32.decode.asBytes(hash)).toString('hex')}`,
+					`${urn}:${type}:${base32DecodeToHex(hash)}`,
 				);
 			}
 
