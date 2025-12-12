@@ -1,5 +1,6 @@
-import { IMagnetURI, MAGNET_INFO_HASH_TYPE, MAGNET_PARAMETER } from '../types';
+import { IMagnetURI, MAGNET_PARAMETER } from '../types';
 import { base32DecodeToHex } from '../utils/base32';
+import { isSupportedHashType, getHashTypeConfig } from '../utils/hashValidator';
 
 /**
  * Internal interface used during the decoding process.
@@ -197,37 +198,51 @@ export default class MagnetDecoder {
 	/**
 	 * Parses and stores an info hash (xt) parameter.
 	 *
-	 * @description Parses the URN-formatted info hash and handles BitTorrent
-	 * info hashes (btih) specifically. Supports two formats:
-	 * - Hex format (40 characters): stored as lowercase hex
-	 * - Base32 format (32 characters): converted to lowercase hex using base32DecodeToHex
+	 * @description Parses the URN-formatted info hash and handles supported
+	 * hash types: btih, sha1, md5, and ed2k. Supports two formats where applicable:
+	 * - Hex format: stored as lowercase hex
+	 * - Base32 format (btih, sha1 only): converted to lowercase hex
 	 *
 	 * The full URN format is preserved in the output (e.g., 'urn:btih:hexhash').
 	 *
 	 * @remarks
 	 * - Only URN-formatted values are processed (must start with 'urn:')
-	 * - Only BitTorrent info hashes (btih type) are currently supported
-	 * - Other hash types are silently ignored (marked as TODO in types)
+	 * - Supported hash types: btih (40 hex/32 base32), sha1 (40 hex/32 base32),
+	 *   md5 (32 hex), ed2k (32 hex)
+	 * - Unsupported hash types are silently ignored
 	 * - Duplicate hashes are automatically deduplicated via Set
 	 */
 	private _addInfoHash(urnValue: string): void {
 		const [ urn, type, hash ] = urnValue.split(':');
 
-		if (urn !== 'urn') {
+		if (urn !== 'urn' || !hash) {
 			return;
 		}
 
-		if (type === MAGNET_INFO_HASH_TYPE.BIT_TORRENT_INFO_HASH) {
-			if (hash.length === 40) {
-				this._decodedMagnetURI.infoHashes.add(
-					`${urn}:${type}:${hash.toLowerCase()}`,
-				);
-			}
-			if (hash.length === 32) {
-				this._decodedMagnetURI.infoHashes.add(
-					`${urn}:${type}:${base32DecodeToHex(hash)}`,
-				);
-			}
+		if (!isSupportedHashType(type)) {
+			return;
+		}
+
+		const config = getHashTypeConfig(type)!;
+
+		// Check for hex format
+		if (hash.length === config.hexLength && (/^[a-fA-F0-9]+$/).test(hash)) {
+			this._decodedMagnetURI.infoHashes.add(
+				`${urn}:${type}:${hash.toLowerCase()}`,
+			);
+
+			return;
+		}
+
+		// Check for base32 format (only if supported by this hash type)
+		if (
+			config.base32Length !== null
+			&& hash.length === config.base32Length
+			&& (/^[A-Z2-7]+$/i).test(hash)
+		) {
+			this._decodedMagnetURI.infoHashes.add(
+				`${urn}:${type}:${base32DecodeToHex(hash)}`,
+			);
 
 			return;
 		}

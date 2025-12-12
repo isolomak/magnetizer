@@ -41,6 +41,50 @@ describe('Encoding tests', () => {
 
 	});
 
+	describe('SHA1 info hash encoding tests', () => {
+
+		test('should encode sha1 info hash with full URN', () => {
+			const result = encode({ infoHashes: [ 'urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709' ] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709');
+		});
+
+	});
+
+	describe('MD5 info hash encoding tests', () => {
+
+		test('should encode md5 info hash with full URN', () => {
+			const result = encode({ infoHashes: [ 'urn:md5:d41d8cd98f00b204e9800998ecf8427e' ] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:md5:d41d8cd98f00b204e9800998ecf8427e');
+		});
+
+	});
+
+	describe('ED2K info hash encoding tests', () => {
+
+		test('should encode ed2k info hash with full URN', () => {
+			const result = encode({ infoHashes: [ 'urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0' ] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0');
+		});
+
+	});
+
+	describe('Multiple hash types encoding tests', () => {
+
+		test('should encode multiple hash types', () => {
+			const result = encode({
+				infoHashes: [
+					'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+					'urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709',
+					'urn:md5:d41d8cd98f00b204e9800998ecf8427e',
+				],
+			});
+			assert.ok(result.includes('xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a'));
+			assert.ok(result.includes('xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709'));
+			assert.ok(result.includes('xt=urn:md5:d41d8cd98f00b204e9800998ecf8427e'));
+		});
+
+	});
+
 	describe('Web seed tests', () => {
 
 		test('should encode web seed', () => {

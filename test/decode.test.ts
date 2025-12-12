@@ -73,8 +73,8 @@ describe('Decoding tests', () => {
 			assert.deepStrictEqual(result.infoHashes, []);
 		});
 
-		test('should ignore not btih topics', () => {
-			const result = decode('magnet:?xt=urn:sha1:XRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5');
+		test('should ignore unsupported hash types', () => {
+			const result = decode('magnet:?xt=urn:tree:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
 			assert.deepStrictEqual(result.infoHashes, []);
 		});
 
@@ -91,6 +91,87 @@ describe('Decoding tests', () => {
 		test('should handle urn:btih with invalid hash length', () => {
 			const result = decode('magnet:?xt=urn:btih:tooshort');
 			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+		test('should handle urn:btih with invalid hex characters', () => {
+			const result = decode('magnet:?xt=urn:btih:zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
+			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+		test('should handle urn without hash value', () => {
+			const result = decode('magnet:?xt=urn:btih:');
+			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+	});
+
+	describe('SHA1 info hash tests', () => {
+
+		test('should decode sha1 hex hash', () => {
+			const result = decode('magnet:?xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709');
+			assert.deepStrictEqual(result.infoHashes, [ 'urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709' ]);
+		});
+
+		test('should decode sha1 base32 hash', () => {
+			const result = decode('magnet:?xt=urn:sha1:XRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5');
+			assert.deepStrictEqual(result.infoHashes, [ 'urn:sha1:bc6fa790b7738892c6b415fc76658a976763715d' ]);
+		});
+
+		test('should handle sha1 with invalid hash length', () => {
+			const result = decode('magnet:?xt=urn:sha1:tooshort');
+			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+	});
+
+	describe('MD5 info hash tests', () => {
+
+		test('should decode md5 hex hash', () => {
+			const result = decode('magnet:?xt=urn:md5:d41d8cd98f00b204e9800998ecf8427e');
+			assert.deepStrictEqual(result.infoHashes, [ 'urn:md5:d41d8cd98f00b204e9800998ecf8427e' ]);
+		});
+
+		test('should handle md5 with invalid hash length (40 chars)', () => {
+			const result = decode('magnet:?xt=urn:md5:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+		test('should handle md5 with invalid hash length (too short)', () => {
+			const result = decode('magnet:?xt=urn:md5:tooshort');
+			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+	});
+
+	describe('ED2K info hash tests', () => {
+
+		test('should decode ed2k hex hash', () => {
+			const result = decode('magnet:?xt=urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0');
+			assert.deepStrictEqual(result.infoHashes, [ 'urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0' ]);
+		});
+
+		test('should handle ed2k with invalid hash length', () => {
+			const result = decode('magnet:?xt=urn:ed2k:tooshort');
+			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+	});
+
+	describe('Multiple hash types tests', () => {
+
+		test('should decode magnet link with multiple hash types', () => {
+			const result = decode(
+				'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' +
+				'&xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709' +
+				'&xt=urn:md5:d41d8cd98f00b204e9800998ecf8427e' +
+				'&xt=urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0',
+			);
+			assert.deepStrictEqual(result.infoHashes, [
+				'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+				'urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709',
+				'urn:md5:d41d8cd98f00b204e9800998ecf8427e',
+				'urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0',
+			]);
 		});
 
 	});

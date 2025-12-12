@@ -136,14 +136,16 @@ export default class MagnetEncoder {
 	 *
 	 * @description Processes the infoHashes array and converts each hash into a
 	 * proper URN format. Supports multiple input formats:
-	 * - Buffer objects: converted to hex string
-	 * - Hex strings without URN prefix: prefixed with 'urn:btih:'
-	 * - Full URN strings: used as-is
+	 * - Buffer objects: converted to hex string, prefixed with 'urn:btih:'
+	 * - Hex strings without URN prefix: prefixed with 'urn:btih:' (backward compatible)
+	 * - Full URN strings (urn:btih:, urn:sha1:, urn:md5:, urn:ed2k:): used as-is
 	 *
 	 * Duplicate hashes are automatically removed using a Set.
 	 *
-	 * @remarks Each unique info hash generates a separate 'xt' parameter in the output.
-	 * If infoHashes is undefined or empty, no parameters are added.
+	 * @remarks
+	 * - Plain hashes default to btih for backward compatibility
+	 * - Each unique info hash generates a separate 'xt' parameter in the output
+	 * - If infoHashes is undefined or empty, no parameters are added
 	 */
 	private _encodeInfoHashes(data: Partial<IMagnetURI>): void {
 		const encodedHashesSet = new Set<string>();
