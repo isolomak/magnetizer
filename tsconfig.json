@@ -3,7 +3,7 @@
     "module": "CommonJS",
     "declaration": true,
     "esModuleInterop": true,
-    "target": "es6",
+    "target": "ES2020",
     "noImplicitAny": true,
     "moduleResolution": "node",
     "allowJs": false,
@@ -11,13 +11,11 @@
     "preserveConstEnums": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "watch": false,
     "pretty": true,
     "strict": true,
     "outDir": "./lib",
     "lib": [
-      "es6",
-      "dom"
+      "ES2020",
     ]
   },
   "include": [
