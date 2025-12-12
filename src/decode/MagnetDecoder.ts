@@ -50,7 +50,7 @@ export default class MagnetDecoder {
 		const [ key, value ] = param.split('=');
 
 		if (!key || !value) {
-			return ;
+			return;
 		}
 
 		switch (key) {
@@ -73,7 +73,7 @@ export default class MagnetDecoder {
 			case MAGNET_PARAMETER.TRACKER:
 				return this._addTracker(value);
 			default:
-				return ;
+				return;
 		}
 	}
 
@@ -104,23 +104,23 @@ export default class MagnetDecoder {
 		const [ urn, type, hash ] = urnValue.split(':');
 
 		if (urn !== 'urn') {
-			return ;
+			return;
 		}
 
 		if (type === MAGNET_INFO_HASH_TYPE.BIT_TORRENT_INFO_HASH) {
 			if (hash.length === 40) {
 				this._decodedMagnetURI.infoHashes.add(
-					`${urn}:${type}:${hash.toLowerCase()}`
+					`${urn}:${type}:${hash.toLowerCase()}`,
 				);
 			}
 			if (hash.length === 32) {
 				this._decodedMagnetURI.infoHashes.add(
-					`${urn}:${type}:${Buffer.from(base32.decode.asBytes(hash)).toString('hex')}`
+					`${urn}:${type}:${Buffer.from(base32.decode.asBytes(hash)).toString('hex')}`,
 				);
 			}
-			return ;
-		}
 
+			return;
+		}
 	}
 
 	/**
@@ -128,7 +128,7 @@ export default class MagnetDecoder {
 	 */
 	private _addTracker(tracker: string): void {
 		this._decodedMagnetURI.trackers.add(
-			decodeURIComponent(tracker)
+			decodeURIComponent(tracker),
 		);
 	}
 
@@ -148,7 +148,7 @@ export default class MagnetDecoder {
 	 */
 	private _addWebSeed(webSeed: string): void {
 		this._decodedMagnetURI.webSeeds.add(
-			decodeURIComponent(webSeed)
+			decodeURIComponent(webSeed),
 		);
 	}
 
@@ -157,7 +157,7 @@ export default class MagnetDecoder {
 	 */
 	private _addAcceptableSource(source: string): void {
 		this._decodedMagnetURI.acceptableSources.add(
-			decodeURIComponent(source)
+			decodeURIComponent(source),
 		);
 	}
 
@@ -166,7 +166,7 @@ export default class MagnetDecoder {
 	 */
 	private _addSource(source: string): void {
 		this._decodedMagnetURI.sources.add(
-			decodeURIComponent(source)
+			decodeURIComponent(source),
 		);
 	}
 

@@ -16,7 +16,7 @@ export default class MagnetEncoder {
 	 */
 	public encode(data: Partial<IMagnetURI>): string {
 		// Reset encoded parameters
-		this._encodedParameters = []
+		this._encodedParameters = [];
 
 		this._encodeDisplayName(data);
 		this._encodeLength(data);
@@ -38,11 +38,11 @@ export default class MagnetEncoder {
 		const displayName = data.displayName?.trim();
 		
 		if (!displayName) {
-			return ;
+			return;
 		}
 
 		this._encodedParameters.push(
-			`${MAGNET_PARAMETER.DISPLAY_NAME}=${encodeURIComponent(displayName)}`
+			`${MAGNET_PARAMETER.DISPLAY_NAME}=${encodeURIComponent(displayName)}`,
 		);
 	}
 
@@ -53,11 +53,11 @@ export default class MagnetEncoder {
 		const length = data.length;
 
 		if (length === null || length === undefined) {
-			return ;
+			return;
 		}
 
 		this._encodedParameters.push(
-			`${MAGNET_PARAMETER.LENGTH}=${length}`
+			`${MAGNET_PARAMETER.LENGTH}=${length}`,
 		);
 	}
 
@@ -74,13 +74,13 @@ export default class MagnetEncoder {
 
 			if (!providedInfoHash.startsWith('urn:')) {
 				encodedHashesSet.add(
-					`${MAGNET_PARAMETER.INFO_HASH}=urn:btih:${providedInfoHash}`
+					`${MAGNET_PARAMETER.INFO_HASH}=urn:btih:${providedInfoHash}`,
 				);
 			}
 			else {
 				encodedHashesSet.add(
-					`${MAGNET_PARAMETER.INFO_HASH}=${providedInfoHash}`
-				);	
+					`${MAGNET_PARAMETER.INFO_HASH}=${providedInfoHash}`,
+				);
 			}
 		}
 
@@ -95,7 +95,7 @@ export default class MagnetEncoder {
 
 		for (const trackerUrl of data.trackers || []) {
 			encodedTrackersSet.add(
-				`${MAGNET_PARAMETER.TRACKER}=${encodeURIComponent(trackerUrl)}`
+				`${MAGNET_PARAMETER.TRACKER}=${encodeURIComponent(trackerUrl)}`,
 			);
 		}
 
@@ -110,13 +110,13 @@ export default class MagnetEncoder {
 
 		for (const keyword of data.keywords || []) {
 			encodedKeywords.add(
-				encodeURIComponent(keyword)	
+				encodeURIComponent(keyword),
 			);
 		}
 
 		if (encodedKeywords.size) {
 			this._encodedParameters.push(
-				`${MAGNET_PARAMETER.KEYWORD}=${Array.from(encodedKeywords).join('+')}`
+				`${MAGNET_PARAMETER.KEYWORD}=${Array.from(encodedKeywords).join('+')}`,
 			);
 		}
 	}
@@ -129,7 +129,7 @@ export default class MagnetEncoder {
 
 		for (const webSeed of data.webSeeds || []) {
 			encodedWebSeeds.add(
-				`${MAGNET_PARAMETER.WEB_SEED}=${encodeURIComponent(webSeed)}`
+				`${MAGNET_PARAMETER.WEB_SEED}=${encodeURIComponent(webSeed)}`,
 			);
 		}
 
@@ -144,7 +144,7 @@ export default class MagnetEncoder {
 
 		for (const source of data.acceptableSources || []) {
 			encodedAcceptableSources.add(
-				`${MAGNET_PARAMETER.ACCEPTABLE_SOURCE}=${encodeURIComponent(source)}`
+				`${MAGNET_PARAMETER.ACCEPTABLE_SOURCE}=${encodeURIComponent(source)}`,
 			);
 		}
 
@@ -159,7 +159,7 @@ export default class MagnetEncoder {
 
 		for (const source of data.sources || []) {
 			encodedSources.add(
-				`${MAGNET_PARAMETER.SOURCE}=${encodeURIComponent(source)}`
+				`${MAGNET_PARAMETER.SOURCE}=${encodeURIComponent(source)}`,
 			);
 		}
 
@@ -173,11 +173,11 @@ export default class MagnetEncoder {
 		const manifest = data.manifest?.trim();
 
 		if (!manifest) {
-			return ;
+			return;
 		}
 
 		this._encodedParameters.push(
-			`${MAGNET_PARAMETER.MANIFEST}=${encodeURIComponent(manifest)}`
+			`${MAGNET_PARAMETER.MANIFEST}=${encodeURIComponent(manifest)}`,
 		);
 	}
 
