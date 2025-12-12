@@ -2,16 +2,20 @@
   "name": "magnetizer",
   "version": "2.0.2",
   "description": "Library for decoding and encoding magnet links",
-  "main": "lib/index.js",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
-      "require": "./lib/index.js",
-      "import": "./lib/index.js"
+      "types": "./lib/cjs/index.d.ts",
+      "require": "./lib/cjs/index.js",
+      "import": "./lib/esm/index.js"
     }
   },
   "scripts": {
-    "build": "./node_modules/.bin/tsc",
+    "build": "npm run build:cjs && npm run build:esm && npm run build:package-json",
+    "build:cjs": "tsc -p tsconfig.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:package-json": "echo '{\"type\":\"commonjs\"}' > lib/cjs/package.json && echo '{\"type\":\"module\"}' > lib/esm/package.json",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "test": "npm run lint && ./node_modules/.bin/jest --runInBand",
@@ -53,7 +57,7 @@
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
   },
-  "types": "./lib/index.d.ts",
+  "types": "./lib/cjs/index.d.ts",
   "files": [
     "lib/**/*",
     "LICENSE.md"
