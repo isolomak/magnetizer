@@ -27,11 +27,9 @@ A powerful TypeScript library for decoding and encoding [magnet links](https://e
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [API Reference](#api-reference)
-  - [decode()](#decodemagnetur-string-imagneturi)
+  - [decode()](#decodemagneturi-string-imagneturi)
   - [encode()](#encodedata-partialimagneturi-string)
-- [Types](#types)
   - [IMagnetURI Interface](#imagneturi-interface)
-  - [Enums](#enums)
 - [Supported Hash Types](#supported-hash-types)
 - [Advanced Usage](#advanced-usage)
 - [Compatibility](#compatibility)
@@ -255,8 +253,6 @@ encode({ infoHashes: ['urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0'] });
 ```
 
 ---
-
-## Types
 
 ### `IMagnetURI` Interface
 
