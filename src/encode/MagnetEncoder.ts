@@ -15,6 +15,9 @@ export default class MagnetEncoder {
 	 * Encode magnet uri
 	 */
 	public encode(data: Partial<IMagnetURI>): string {
+		// Reset encoded parameters
+		this._encodedParameters = []
+
 		this._encodeDisplayName(data);
 		this._encodeLength(data);
 		this._encodeInfoHashes(data);
