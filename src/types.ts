@@ -1,13 +1,14 @@
 
 export enum MAGNET_INFO_HASH_TYPE {
 	TIGER_TREE_HASH = 'tree', // TODO
-	SECURE_HASH_ALGORITHM_1 = 'sha1', // TODO
+	SECURE_HASH_ALGORITHM_1 = 'sha1',
 	BIT_PRINT = 'bitprint', // TODO
-	E_DONKEY_2000 = 'ed2k', // TODO
+	E_DONKEY_2000 = 'ed2k',
 	ADVANCED_INTELLIGENT_CORRUPTION_HANDLER = 'aich', // TODO
 	KAZAA_HASH = 'kzhash', // TODO
 	BIT_TORRENT_INFO_HASH = 'btih',
-	MESSAGE_DIGEST_5 = 'md5', // TODO
+	BIT_TORRENT_V2_INFO_HASH = 'btmh',
+	MESSAGE_DIGEST_5 = 'md5',
 }
 
 export enum MAGNET_PARAMETER {
@@ -38,7 +39,7 @@ export interface IMagnetURI {
 	/** 
 	 * URN containing file hash
 	 */
-	infoHashes: Array<string | Buffer>;
+	infoHashes: Array<string | Uint8Array>;
 	/** 
 	 * the payload data served over HTTP(S)
 	 */

@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import { encode } from '../src';
+import MagnetEncoder from '../src/encode/MagnetEncoder';
 
 describe('Encoding tests', () => {
 
@@ -36,6 +37,77 @@ describe('Encoding tests', () => {
 		test('should encode BitTorrent info hash from buffer', () => {
 			const result = encode({ infoHashes: [ Buffer.from('c12fe1c06bba254a9dc9f519b335aa7c1367a88a', 'hex') ] });
 			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+		});
+
+		test('should encode BitTorrent info hash from Uint8Array', () => {
+			const hexString = 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a';
+			const bytes = new Uint8Array(hexString.match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
+			const result = encode({ infoHashes: [bytes] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+		});
+
+	});
+
+	describe('SHA1 info hash encoding tests', () => {
+
+		test('should encode sha1 info hash with full URN', () => {
+			const result = encode({ infoHashes: [ 'urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709' ] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709');
+		});
+
+	});
+
+	describe('MD5 info hash encoding tests', () => {
+
+		test('should encode md5 info hash with full URN', () => {
+			const result = encode({ infoHashes: [ 'urn:md5:d41d8cd98f00b204e9800998ecf8427e' ] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:md5:d41d8cd98f00b204e9800998ecf8427e');
+		});
+
+	});
+
+	describe('ED2K info hash encoding tests', () => {
+
+		test('should encode ed2k info hash with full URN', () => {
+			const result = encode({ infoHashes: [ 'urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0' ] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0');
+		});
+
+	});
+
+	describe('BitTorrent v2 (btmh) info hash encoding tests', () => {
+
+		test('should encode btmh info hash with full URN', () => {
+			const btmhHash = '1220' + 'a'.repeat(64); // 68 chars total
+			const result = encode({ infoHashes: [ `urn:btmh:${btmhHash}` ] });
+			assert.deepStrictEqual(result, `magnet:?xt=urn:btmh:${btmhHash}`);
+		});
+
+		test('should encode hybrid magnet with both btih and btmh', () => {
+			const btih = 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a';
+			const btmh = '1220' + 'b'.repeat(64);
+			const result = encode({
+				infoHashes: [ `urn:btih:${btih}`, `urn:btmh:${btmh}` ],
+			});
+			assert.ok(result.includes(`xt=urn:btih:${btih}`));
+			assert.ok(result.includes(`xt=urn:btmh:${btmh}`));
+		});
+
+	});
+
+	describe('Multiple hash types encoding tests', () => {
+
+		test('should encode multiple hash types', () => {
+			const result = encode({
+				infoHashes: [
+					'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+					'urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709',
+					'urn:md5:d41d8cd98f00b204e9800998ecf8427e',
+				],
+			});
+			assert.ok(result.includes('xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a'));
+			assert.ok(result.includes('xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709'));
+			assert.ok(result.includes('xt=urn:md5:d41d8cd98f00b204e9800998ecf8427e'));
 		});
 
 	});
@@ -116,6 +188,33 @@ describe('Encoding tests', () => {
 			],
 		});
 		assert.deepStrictEqual(result, 'magnet:?dn=test-name_for_magnet-link.tar.gz&xl=100500&xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&tr=http%3A%2F%2Ftracker.example.com%2Fannounce.php%3Fua%3D1111111111&tr=wss%3A%2F%2Ftracker.webtorrent.io&kt=test-name_for_magnet-link+tar+gz&ws=http%3A%2F%2Fexample.com%2Ftest-name_for_magnet-link.tar.gz&as=http%3A%2F%2Fexample.com%2Ftest-name_for_magnet-link.tar.gz&xs=http%3A%2F%2Fcache.example.com%2Fc12fe1c06bba254a9dc9f519b335aa7c1367a88a&mt=http%3A%2F%2Fexample.com%2Fmanifest');
+	});
+
+	describe('Encoder reuse tests', () => {
+
+		test('should not accumulate state between encode calls on same instance', () => {
+			const encoder = new MagnetEncoder();
+
+			const result1 = encoder.encode({ displayName: 'first' });
+			const result2 = encoder.encode({ displayName: 'second' });
+
+			assert.strictEqual(result1, 'magnet:?dn=first');
+			assert.strictEqual(result2, 'magnet:?dn=second');
+			assert.ok(!result2.includes('first'), 'Second result should not contain data from first encode');
+		});
+
+		test('should not accumulate trackers between encode calls', () => {
+			const encoder = new MagnetEncoder();
+
+			const result1 = encoder.encode({ trackers: ['http://tracker1.com'] });
+			const result2 = encoder.encode({ trackers: ['http://tracker2.com'] });
+
+			assert.ok(result1.includes('tracker1.com'));
+			assert.ok(!result1.includes('tracker2.com'));
+			assert.ok(result2.includes('tracker2.com'));
+			assert.ok(!result2.includes('tracker1.com'), 'Second result should not contain trackers from first encode');
+		});
+
 	});
 
 });
