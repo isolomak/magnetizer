@@ -31,6 +31,11 @@ describe('Hash Validator tests', () => {
 			assert.strictEqual(HASH_TYPE_CONFIG['ed2k'].base32Length, null);
 		});
 
+		test('should have correct config for btmh (BitTorrent v2)', () => {
+			assert.strictEqual(HASH_TYPE_CONFIG['btmh'].hexLength, 68);
+			assert.strictEqual(HASH_TYPE_CONFIG['btmh'].base32Length, null);
+		});
+
 	});
 
 	describe('SUPPORTED_HASH_TYPES', () => {
@@ -51,8 +56,12 @@ describe('Hash Validator tests', () => {
 			assert.strictEqual(SUPPORTED_HASH_TYPES.has(MAGNET_INFO_HASH_TYPE.E_DONKEY_2000), true);
 		});
 
-		test('should have exactly 4 supported types', () => {
-			assert.strictEqual(SUPPORTED_HASH_TYPES.size, 4);
+		test('should contain btmh (BitTorrent v2)', () => {
+			assert.strictEqual(SUPPORTED_HASH_TYPES.has(MAGNET_INFO_HASH_TYPE.BIT_TORRENT_V2_INFO_HASH), true);
+		});
+
+		test('should have exactly 5 supported types', () => {
+			assert.strictEqual(SUPPORTED_HASH_TYPES.size, 5);
 		});
 
 	});
@@ -73,6 +82,10 @@ describe('Hash Validator tests', () => {
 
 		test('should return true for ed2k', () => {
 			assert.strictEqual(isSupportedHashType('ed2k'), true);
+		});
+
+		test('should return true for btmh', () => {
+			assert.strictEqual(isSupportedHashType('btmh'), true);
 		});
 
 		test('should return false for unsupported types', () => {
@@ -108,6 +121,12 @@ describe('Hash Validator tests', () => {
 		test('should return correct config for ed2k', () => {
 			const config = getHashTypeConfig('ed2k');
 			assert.strictEqual(config?.hexLength, 32);
+			assert.strictEqual(config?.base32Length, null);
+		});
+
+		test('should return correct config for btmh (BitTorrent v2)', () => {
+			const config = getHashTypeConfig('btmh');
+			assert.strictEqual(config?.hexLength, 68);
 			assert.strictEqual(config?.base32Length, null);
 		});
 

@@ -75,6 +75,26 @@ describe('Encoding tests', () => {
 
 	});
 
+	describe('BitTorrent v2 (btmh) info hash encoding tests', () => {
+
+		test('should encode btmh info hash with full URN', () => {
+			const btmhHash = '1220' + 'a'.repeat(64); // 68 chars total
+			const result = encode({ infoHashes: [ `urn:btmh:${btmhHash}` ] });
+			assert.deepStrictEqual(result, `magnet:?xt=urn:btmh:${btmhHash}`);
+		});
+
+		test('should encode hybrid magnet with both btih and btmh', () => {
+			const btih = 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a';
+			const btmh = '1220' + 'b'.repeat(64);
+			const result = encode({
+				infoHashes: [ `urn:btih:${btih}`, `urn:btmh:${btmh}` ],
+			});
+			assert.ok(result.includes(`xt=urn:btih:${btih}`));
+			assert.ok(result.includes(`xt=urn:btmh:${btmh}`));
+		});
+
+	});
+
 	describe('Multiple hash types encoding tests', () => {
 
 		test('should encode multiple hash types', () => {

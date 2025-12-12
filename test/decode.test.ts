@@ -157,6 +157,43 @@ describe('Decoding tests', () => {
 
 	});
 
+	describe('BitTorrent v2 info hash (btmh) tests', () => {
+
+		test('should decode btmh hash with multihash prefix', () => {
+			// btmh format: 1220 (multihash prefix) + 64 hex chars (SHA-256) = 68 chars total
+			const btmhHash = '1220' + 'a'.repeat(64);
+			const result = decode(`magnet:?xt=urn:btmh:${btmhHash}`);
+			assert.deepStrictEqual(result.infoHashes, [ `urn:btmh:${btmhHash}` ]);
+		});
+
+		test('should decode btmh hash with uppercase hex', () => {
+			const btmhHash = '1220' + 'A'.repeat(64);
+			const result = decode(`magnet:?xt=urn:btmh:${btmhHash}`);
+			assert.deepStrictEqual(result.infoHashes, [ `urn:btmh:${btmhHash.toLowerCase()}` ]);
+		});
+
+		test('should reject btmh hash with wrong length', () => {
+			const result = decode('magnet:?xt=urn:btmh:1220abc');
+			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+		test('should reject btmh hash without multihash prefix', () => {
+			// 64 chars (valid SHA-256 but missing 1220 prefix)
+			const result = decode(`magnet:?xt=urn:btmh:${'a'.repeat(64)}`);
+			assert.deepStrictEqual(result.infoHashes, []);
+		});
+
+		test('should decode hybrid magnet with both btih and btmh', () => {
+			const btih = 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a';
+			const btmh = '1220' + 'b'.repeat(64);
+			const result = decode(`magnet:?xt=urn:btih:${btih}&xt=urn:btmh:${btmh}`);
+			assert.strictEqual(result.infoHashes.length, 2);
+			assert.ok(result.infoHashes.includes(`urn:btih:${btih}`));
+			assert.ok(result.infoHashes.includes(`urn:btmh:${btmh}`));
+		});
+
+	});
+
 	describe('Multiple hash types tests', () => {
 
 		test('should decode magnet link with multiple hash types', () => {
