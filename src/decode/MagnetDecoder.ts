@@ -81,7 +81,10 @@ export default class MagnetDecoder {
 	 * Add display name
 	 */
 	private _addDisplayName(file: string): void {
-		this._decodedMagnetURI.displayName = decodeURIComponent(file).replace(/\+/g, ' ');
+		const displayName = decodeURIComponent(file).replace(/\+/g, ' ').trim();
+		if (displayName) {
+			this._decodedMagnetURI.displayName = displayName;
+		}
 	}
 
 	/**

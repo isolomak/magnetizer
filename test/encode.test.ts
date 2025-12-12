@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import { encode } from '../src';
+import MagnetEncoder from '../src/encode/MagnetEncoder';
 
 describe('Encoding tests', () => {
 
@@ -116,6 +117,33 @@ describe('Encoding tests', () => {
 			],
 		});
 		assert.deepStrictEqual(result, 'magnet:?dn=test-name_for_magnet-link.tar.gz&xl=100500&xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&tr=http%3A%2F%2Ftracker.example.com%2Fannounce.php%3Fua%3D1111111111&tr=wss%3A%2F%2Ftracker.webtorrent.io&kt=test-name_for_magnet-link+tar+gz&ws=http%3A%2F%2Fexample.com%2Ftest-name_for_magnet-link.tar.gz&as=http%3A%2F%2Fexample.com%2Ftest-name_for_magnet-link.tar.gz&xs=http%3A%2F%2Fcache.example.com%2Fc12fe1c06bba254a9dc9f519b335aa7c1367a88a&mt=http%3A%2F%2Fexample.com%2Fmanifest');
+	});
+
+	describe('Encoder reuse tests', () => {
+
+		test('should not accumulate state between encode calls on same instance', () => {
+			const encoder = new MagnetEncoder();
+
+			const result1 = encoder.encode({ displayName: 'first' });
+			const result2 = encoder.encode({ displayName: 'second' });
+
+			assert.strictEqual(result1, 'magnet:?dn=first');
+			assert.strictEqual(result2, 'magnet:?dn=second');
+			assert.ok(!result2.includes('first'), 'Second result should not contain data from first encode');
+		});
+
+		test('should not accumulate trackers between encode calls', () => {
+			const encoder = new MagnetEncoder();
+
+			const result1 = encoder.encode({ trackers: ['http://tracker1.com'] });
+			const result2 = encoder.encode({ trackers: ['http://tracker2.com'] });
+
+			assert.ok(result1.includes('tracker1.com'));
+			assert.ok(!result1.includes('tracker2.com'));
+			assert.ok(result2.includes('tracker2.com'));
+			assert.ok(!result2.includes('tracker1.com'), 'Second result should not contain trackers from first encode');
+		});
+
 	});
 
 });

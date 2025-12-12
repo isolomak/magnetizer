@@ -54,6 +54,11 @@ describe('Decoding tests', () => {
 			assert.deepStrictEqual(result.length, 100500);
 		});
 
+		test('should handle non-numeric length', () => {
+			const result = decode('magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&xl=abc');
+			assert.strictEqual(result.length, null);
+		});
+
 	});
 
 	describe('Info hash tests' , () => {
@@ -81,6 +86,11 @@ describe('Decoding tests', () => {
 		test('should decode Base32 BitTorrent info hash', () => {
 			const result = decode('magnet:?xt=urn:btih:QHQXPYWMACKDWKP47RRVIV7VOURXFE5Q');
 			assert.deepStrictEqual(result.infoHashes, [ 'urn:btih:81e177e2cc00943b29fcfc635457f575237293b0' ]);
+		});
+
+		test('should handle urn:btih with invalid hash length', () => {
+			const result = decode('magnet:?xt=urn:btih:tooshort');
+			assert.deepStrictEqual(result.infoHashes, []);
 		});
 
 	});
@@ -153,6 +163,21 @@ describe('Decoding tests', () => {
 
 	});
 
+	describe('Empty value tests', () => {
+
+		test('should handle empty parameter values', () => {
+			const result = decode('magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&dn=&tr=');
+			assert.strictEqual(result.displayName, null);
+			assert.deepStrictEqual(result.trackers, []);
+		});
+
+		test('should handle whitespace-only display name', () => {
+			const result = decode('magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&dn=%20%20');
+			assert.strictEqual(result.displayName, null);
+		});
+
+	});
+
 	test('example test', () => {
 		const result = decode('magnet:?dn=test-name_for_magnet-link.tar.gz&xl=100500&xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&tr=http%3A%2F%2Ftracker.example.org%2Fannounce.php%3Fua%3D1111111111&tr=wss%3A%2F%2Ftracker.webtorrent.io&kt=martin+luther+king+mp3&ws=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz&as=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz&xs=http%3A%2F%2Fcache.example.org%2FXRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5&mt=http%3A%2F%2Fweblog.foo%2Fall-my-favorites.rss');
 		assert.deepStrictEqual(result, {
@@ -170,10 +195,5 @@ describe('Decoding tests', () => {
 			],
 		});
 	});
-
-	// test('t', () => {
-	// 	const result = decode('magnet:?xt=urn:ed2k:354B15E68FB8F36D7CD88FF94116CDC1&xt=urn:tree:tiger:7N5OAMRNGMSSEUE3ORHOKWN4WWIQ5X4EBOOTLJY&xt=urn:btih:QHQXPYWMACKDWKP47RRVIV7VOURXFE5Q&xl=10826029&dn=mediawiki-1.15.1.tar.gz&tr=udp%3A%2F%2Ftracker.example4.com%3A80%2Fannounce&as=http%3A%2F%2Fdownload.wikimedia.org%2Fmediawiki%2F1.15%2Fmediawiki-1.15.1.tar.gz&xs=http%3A%2F%2Fcache.example.org%2FXRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5&xs=dchub://example.org');
-	// 	console.log(result);
-	// });
 
 });
