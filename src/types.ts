@@ -38,7 +38,7 @@ export interface IMagnetURI {
 	/** 
 	 * URN containing file hash
 	 */
-	infoHashes: Array<string | Buffer>;
+	infoHashes: Array<string | Uint8Array>;
 	/** 
 	 * the payload data served over HTTP(S)
 	 */

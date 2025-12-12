@@ -15,7 +15,7 @@ import { IMagnetURI, MAGNET_PARAMETER } from '../types';
  * @remarks
  * - Empty or null/undefined values are automatically omitted from the output
  * - Duplicate values in arrays are deduplicated using Set operations
- * - Info hashes can be provided as hex strings, URN strings, or Buffer objects
+ * - Info hashes can be provided as hex strings, URN strings, or Uint8Array objects
  * - All string values are URL-encoded using encodeURIComponent
  *
  * @example
@@ -136,7 +136,7 @@ export default class MagnetEncoder {
 	 *
 	 * @description Processes the infoHashes array and converts each hash into a
 	 * proper URN format. Supports multiple input formats:
-	 * - Buffer objects: converted to hex string, prefixed with 'urn:btih:'
+	 * - Uint8Array objects: converted to hex string, prefixed with 'urn:btih:'
 	 * - Hex strings without URN prefix: prefixed with 'urn:btih:' (backward compatible)
 	 * - Full URN strings (urn:btih:, urn:sha1:, urn:md5:, urn:ed2k:): used as-is
 	 *
@@ -151,8 +151,8 @@ export default class MagnetEncoder {
 		const encodedHashesSet = new Set<string>();
 
 		for (const infoHash of data.infoHashes || []) {
-			const providedInfoHash = Buffer.isBuffer(infoHash)
-				? infoHash.toString('hex')
+			const providedInfoHash = infoHash instanceof Uint8Array
+				? Array.from(infoHash).map(b => b.toString(16).padStart(2, '0')).join('')
 				: infoHash;
 
 			if (!providedInfoHash.startsWith('urn:')) {

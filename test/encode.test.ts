@@ -39,6 +39,13 @@ describe('Encoding tests', () => {
 			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
 		});
 
+		test('should encode BitTorrent info hash from Uint8Array', () => {
+			const hexString = 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a';
+			const bytes = new Uint8Array(hexString.match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
+			const result = encode({ infoHashes: [bytes] });
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+		});
+
 	});
 
 	describe('SHA1 info hash encoding tests', () => {
