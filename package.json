@@ -1,6 +1,6 @@
 {
   "name": "magnetizer",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "Library for decoding and encoding magnet links",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
