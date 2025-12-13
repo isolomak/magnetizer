@@ -134,8 +134,9 @@ export default class MagnetEncoder {
 	/**
 	 * Encodes info hash parameters (xt) from the magnet URI data.
 	 *
-	 * @description Processes the infoHashes array and converts each hash into a
-	 * proper URN format. Supports multiple input formats:
+	 * @description Processes both infoHashData (preferred) and infoHashes (deprecated)
+	 * arrays and converts each hash into a proper URN format. Supports multiple input formats:
+	 * - IInfoHashData objects: uses urn field directly, or constructs from type+value
 	 * - Uint8Array objects: converted to hex string, prefixed with 'urn:btih:'
 	 * - Hex strings without URN prefix: prefixed with 'urn:btih:' (backward compatible)
 	 * - Full URN strings (urn:btih:, urn:sha1:, urn:md5:, urn:ed2k:): used as-is
@@ -143,13 +144,21 @@ export default class MagnetEncoder {
 	 * Duplicate hashes are automatically removed using a Set.
 	 *
 	 * @remarks
+	 * - infoHashData is processed first (preferred format)
 	 * - Plain hashes default to btih for backward compatibility
 	 * - Each unique info hash generates a separate 'xt' parameter in the output
-	 * - If infoHashes is undefined or empty, no parameters are added
+	 * - If both infoHashData and infoHashes are undefined or empty, no parameters are added
 	 */
 	private _encodeInfoHashes(data: Partial<IMagnetURI>): void {
 		const encodedHashesSet = new Set<string>();
 
+		// Process new infoHashData format (preferred)
+		for (const hashData of data.infoHashData || []) {
+			const urn = hashData.urn || `urn:${hashData.type}:${hashData.value}`;
+			encodedHashesSet.add(`${MAGNET_PARAMETER.INFO_HASH}=${urn}`);
+		}
+
+		// Process legacy infoHashes format (deprecated but still supported)
 		for (const infoHash of data.infoHashes || []) {
 			const providedInfoHash = infoHash instanceof Uint8Array
 				? Array.from(infoHash).map(b => b.toString(16).padStart(2, '0')).join('')

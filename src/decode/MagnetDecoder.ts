@@ -1,4 +1,4 @@
-import { IMagnetURI, MAGNET_PARAMETER } from '../types';
+import { IMagnetURI, MAGNET_PARAMETER, MAGNET_INFO_HASH_TYPE, IInfoHashData } from '../types';
 import { base32DecodeToHex } from '../utils/base32';
 import { isSupportedHashType, getHashTypeConfig } from '../utils/hashValidator';
 
@@ -17,6 +17,7 @@ interface IMagnetDecodeURI {
 	length: number | null;
 	manifest: string | null;
 	infoHashes: Set<string>;
+	infoHashData: Map<string, IInfoHashData>;
 	webSeeds: Set<string>;
 	acceptableSources: Set<string>;
 	sources: Set<string>;
@@ -213,38 +214,47 @@ export default class MagnetDecoder {
 	 * - Duplicate hashes are automatically deduplicated via Set
 	 */
 	private _addInfoHash(urnValue: string): void {
-		const [ urn, type, hash ] = urnValue.split(':');
+		const parts = urnValue.split(':');
 
-		if (urn !== 'urn' || !hash) {
+		if (parts.length < 3 || parts[0] !== 'urn') {
 			return;
 		}
+
+		const hash = parts[parts.length - 1]; // Last part is always the hash
+		const type = parts.slice(1, -1).join(':'); // Everything between 'urn:' and hash
 
 		if (!isSupportedHashType(type)) {
 			return;
 		}
 
 		const config = getHashTypeConfig(type)!;
+		let normalizedHash: string | null = null;
 
 		// Check for hex format
 		if (hash.length === config.hexLength && (/^[a-fA-F0-9]+$/).test(hash)) {
-			this._decodedMagnetURI.infoHashes.add(
-				`${urn}:${type}:${hash.toLowerCase()}`,
-			);
-
-			return;
+			normalizedHash = hash.toLowerCase();
 		}
-
 		// Check for base32 format (only if supported by this hash type)
-		if (
+		else if (
 			config.base32Length !== null
 			&& hash.length === config.base32Length
 			&& (/^[A-Z2-7]+$/i).test(hash)
 		) {
-			this._decodedMagnetURI.infoHashes.add(
-				`${urn}:${type}:${base32DecodeToHex(hash)}`,
-			);
+			normalizedHash = base32DecodeToHex(hash);
+		}
 
-			return;
+		if (normalizedHash !== null) {
+			const fullUrn = `urn:${type}:${normalizedHash}`;
+
+			// Add to deprecated infoHashes
+			this._decodedMagnetURI.infoHashes.add(fullUrn);
+
+			// Add to new infoHashData
+			this._decodedMagnetURI.infoHashData.set(fullUrn, {
+				type: type as MAGNET_INFO_HASH_TYPE,
+				value: normalizedHash,
+				urn: fullUrn,
+			});
 		}
 	}
 
@@ -349,6 +359,7 @@ export default class MagnetDecoder {
 			displayName: null,
 			length: null,
 			infoHashes: new Set(),
+			infoHashData: new Map(),
 			webSeeds: new Set(),
 			acceptableSources: new Set(),
 			sources: new Set(),
@@ -373,6 +384,7 @@ export default class MagnetDecoder {
 			length: this._decodedMagnetURI.length,
 			manifest: this._decodedMagnetURI.manifest,
 			infoHashes: Array.from(this._decodedMagnetURI.infoHashes),
+			infoHashData: Array.from(this._decodedMagnetURI.infoHashData.values()),
 			webSeeds: Array.from(this._decodedMagnetURI.webSeeds),
 			acceptableSources: Array.from(this._decodedMagnetURI.acceptableSources),
 			sources: Array.from(this._decodedMagnetURI.sources),

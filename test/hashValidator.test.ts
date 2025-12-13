@@ -60,8 +60,8 @@ describe('Hash Validator tests', () => {
 			assert.strictEqual(SUPPORTED_HASH_TYPES.has(MAGNET_INFO_HASH_TYPE.BIT_TORRENT_V2_INFO_HASH), true);
 		});
 
-		test('should have exactly 5 supported types', () => {
-			assert.strictEqual(SUPPORTED_HASH_TYPES.size, 5);
+		test('should have exactly 6 supported types', () => {
+			assert.strictEqual(SUPPORTED_HASH_TYPES.size, 6);
 		});
 
 	});

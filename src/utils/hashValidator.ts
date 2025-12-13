@@ -32,6 +32,10 @@ export const HASH_TYPE_CONFIG: Record<string, HashTypeConfig> = {
 		hexLength: 32,
 		base32Length: null,
 	},
+	[MAGNET_INFO_HASH_TYPE.TIGER_TREE_HASH]: {
+		hexLength: 48, // TTH is 192-bit = 48 hex chars
+		base32Length: 39, // 192-bit in Base32 = 39 chars
+	},
 };
 
 /**
@@ -43,6 +47,7 @@ export const SUPPORTED_HASH_TYPES = new Set([
 	MAGNET_INFO_HASH_TYPE.SECURE_HASH_ALGORITHM_1,
 	MAGNET_INFO_HASH_TYPE.MESSAGE_DIGEST_5,
 	MAGNET_INFO_HASH_TYPE.E_DONKEY_2000,
+	MAGNET_INFO_HASH_TYPE.TIGER_TREE_HASH,
 ]);
 
 /**
