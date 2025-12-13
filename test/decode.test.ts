@@ -266,6 +266,24 @@ describe('Decoding tests', () => {
 			assert.strictEqual(result.infoHashData[0].value, '31d6cfe0d16ae931b73c59d7e0c089c0');
 		});
 
+		test('should decode tree:tiger hex hash to structured data', () => {
+			const hash = 'a'.repeat(48); // 48 hex chars
+			const result = decode(`magnet:?xt=urn:tree:tiger:${hash}`);
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.strictEqual(result.infoHashData[0].type, 'tree:tiger');
+			assert.strictEqual(result.infoHashData[0].value, hash);
+			assert.strictEqual(result.infoHashData[0].urn, `urn:tree:tiger:${hash}`);
+		});
+
+		test('should decode tree:tiger base32 hash to structured data', () => {
+			const base32Hash = 'VWNJ64SCEMGUEJFYLQCKPQGO3BMMIHKG34NV62I'; // 39 chars
+			const result = decode(`magnet:?xt=urn:tree:tiger:${base32Hash}`);
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.strictEqual(result.infoHashData[0].type, 'tree:tiger');
+			assert.strictEqual(result.infoHashData[0].value.length, 48); // converted to hex
+			assert.strictEqual(result.infoHashData[0].urn.startsWith('urn:tree:tiger:'), true);
+		});
+
 		test('should decode multiple hash types to structured data', () => {
 			const result = decode(
 				'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' +

@@ -214,11 +214,14 @@ export default class MagnetDecoder {
 	 * - Duplicate hashes are automatically deduplicated via Set
 	 */
 	private _addInfoHash(urnValue: string): void {
-		const [ urn, type, hash ] = urnValue.split(':');
+		const parts = urnValue.split(':');
 
-		if (urn !== 'urn' || !hash) {
+		if (parts.length < 3 || parts[0] !== 'urn') {
 			return;
 		}
+
+		const hash = parts[parts.length - 1]; // Last part is always the hash
+		const type = parts.slice(1, -1).join(':'); // Everything between 'urn:' and hash
 
 		if (!isSupportedHashType(type)) {
 			return;
@@ -241,7 +244,7 @@ export default class MagnetDecoder {
 		}
 
 		if (normalizedHash !== null) {
-			const fullUrn = `${urn}:${type}:${normalizedHash}`;
+			const fullUrn = `urn:${type}:${normalizedHash}`;
 
 			// Add to deprecated infoHashes
 			this._decodedMagnetURI.infoHashes.add(fullUrn);

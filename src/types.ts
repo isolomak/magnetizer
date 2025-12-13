@@ -1,6 +1,6 @@
 
 export enum MAGNET_INFO_HASH_TYPE {
-	TIGER_TREE_HASH = 'tree', // TODO
+	TIGER_TREE_HASH = 'tree:tiger',
 	SECURE_HASH_ALGORITHM_1 = 'sha1',
 	BIT_PRINT = 'bitprint', // TODO
 	E_DONKEY_2000 = 'ed2k',
