@@ -112,6 +112,76 @@ describe('Encoding tests', () => {
 
 	});
 
+	describe('Info hash data (structured) encoding tests', () => {
+
+		test('should encode from infoHashData with btih type', () => {
+			const result = encode({
+				infoHashData: [ {
+					type: 'btih',
+					value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+					urn: 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+				} ],
+			});
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+		});
+
+		test('should encode from infoHashData with btmh type', () => {
+			const btmhHash = '1220' + 'a'.repeat(64);
+			const result = encode({
+				infoHashData: [ {
+					type: 'btmh',
+					value: btmhHash,
+					urn: `urn:btmh:${btmhHash}`,
+				} ],
+			});
+			assert.deepStrictEqual(result, `magnet:?xt=urn:btmh:${btmhHash}`);
+		});
+
+		test('should encode from infoHashData without urn field (construct from type+value)', () => {
+			const result = encode({
+				infoHashData: [ {
+					type: 'sha1',
+					value: 'da39a3ee5e6b4b0d3255bfef95601890afd80709',
+					urn: '',
+				} ],
+			});
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709');
+		});
+
+		test('should encode multiple infoHashData entries', () => {
+			const result = encode({
+				infoHashData: [
+					{ type: 'btih', value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a', urn: 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' },
+					{ type: 'sha1', value: 'da39a3ee5e6b4b0d3255bfef95601890afd80709', urn: 'urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709' },
+				],
+			});
+			assert.ok(result.includes('xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a'));
+			assert.ok(result.includes('xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709'));
+		});
+
+		test('should deduplicate when both infoHashes and infoHashData contain same hash', () => {
+			const result = encode({
+				infoHashes: [ 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ],
+				infoHashData: [ {
+					type: 'btih',
+					value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+					urn: 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+				} ],
+			});
+			// Should only contain one xt= parameter
+			const matches = result.match(/xt=urn:btih:/g);
+			assert.strictEqual(matches?.length, 1);
+		});
+
+		test('should maintain backward compatibility with infoHashes', () => {
+			const result = encode({
+				infoHashes: [ 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ],
+			});
+			assert.deepStrictEqual(result, 'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+		});
+
+	});
+
 	describe('Web seed tests', () => {
 
 		test('should encode web seed', () => {

@@ -9,6 +9,7 @@ describe('Decoding tests', () => {
 			displayName: null,
 			length: null,
 			infoHashes: [],
+			infoHashData: [],
 			webSeeds: [],
 			acceptableSources: [],
 			sources: [],
@@ -213,6 +214,83 @@ describe('Decoding tests', () => {
 
 	});
 
+	describe('Info hash data (structured) tests', () => {
+
+		test('should decode BitTorrent info hash to structured data', () => {
+			const result = decode('magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.deepStrictEqual(result.infoHashData[0], {
+				type: 'btih',
+				value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+				urn: 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+			});
+		});
+
+		test('should decode Base32 BitTorrent info hash to structured data', () => {
+			const result = decode('magnet:?xt=urn:btih:QHQXPYWMACKDWKP47RRVIV7VOURXFE5Q');
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.strictEqual(result.infoHashData[0].type, 'btih');
+			assert.strictEqual(result.infoHashData[0].value, '81e177e2cc00943b29fcfc635457f575237293b0');
+			assert.strictEqual(result.infoHashData[0].urn, 'urn:btih:81e177e2cc00943b29fcfc635457f575237293b0');
+		});
+
+		test('should decode btmh hash to structured data', () => {
+			const btmhHash = '1220' + 'a'.repeat(64);
+			const result = decode(`magnet:?xt=urn:btmh:${btmhHash}`);
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.deepStrictEqual(result.infoHashData[0], {
+				type: 'btmh',
+				value: btmhHash,
+				urn: `urn:btmh:${btmhHash}`,
+			});
+		});
+
+		test('should decode sha1 hash to structured data', () => {
+			const result = decode('magnet:?xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709');
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.strictEqual(result.infoHashData[0].type, 'sha1');
+			assert.strictEqual(result.infoHashData[0].value, 'da39a3ee5e6b4b0d3255bfef95601890afd80709');
+		});
+
+		test('should decode md5 hash to structured data', () => {
+			const result = decode('magnet:?xt=urn:md5:d41d8cd98f00b204e9800998ecf8427e');
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.strictEqual(result.infoHashData[0].type, 'md5');
+			assert.strictEqual(result.infoHashData[0].value, 'd41d8cd98f00b204e9800998ecf8427e');
+		});
+
+		test('should decode ed2k hash to structured data', () => {
+			const result = decode('magnet:?xt=urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0');
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.strictEqual(result.infoHashData[0].type, 'ed2k');
+			assert.strictEqual(result.infoHashData[0].value, '31d6cfe0d16ae931b73c59d7e0c089c0');
+		});
+
+		test('should decode multiple hash types to structured data', () => {
+			const result = decode(
+				'magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' +
+				'&xt=urn:sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709',
+			);
+			assert.strictEqual(result.infoHashData.length, 2);
+			assert.strictEqual(result.infoHashData[0].type, 'btih');
+			assert.strictEqual(result.infoHashData[1].type, 'sha1');
+		});
+
+		test('should return empty infoHashData for invalid hashes', () => {
+			const result = decode('magnet:?xt=urn:btih:tooshort');
+			assert.deepStrictEqual(result.infoHashData, []);
+		});
+
+		test('should maintain backward compatibility with infoHashes', () => {
+			const result = decode('magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a');
+			// Both should contain the same data
+			assert.strictEqual(result.infoHashes.length, 1);
+			assert.strictEqual(result.infoHashData.length, 1);
+			assert.strictEqual(result.infoHashes[0], result.infoHashData[0].urn);
+		});
+
+	});
+
 	describe('Web seed tests', () => {
 
 		test('should decode web seed', () => {
@@ -302,6 +380,11 @@ describe('Decoding tests', () => {
 			displayName: 'test-name_for_magnet-link.tar.gz',
 			length: 100500,
 			infoHashes: [ 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' ],
+			infoHashData: [ {
+				type: 'btih',
+				value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+				urn: 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+			} ],
 			webSeeds: [ 'http://download.wikimedia.org/mediawiki/1.15/mediawiki-1.15.1.tar.gz' ],
 			acceptableSources: [ 'http://download.wikimedia.org/mediawiki/1.15/mediawiki-1.15.1.tar.gz' ],
 			sources: [ 'http://cache.example.org/XRX2PEFXOOEJFRVUCX6HMZMKS5TWG4K5' ],

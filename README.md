@@ -30,6 +30,7 @@ A powerful TypeScript library for decoding and encoding [magnet links](https://e
   - [decode()](#decodemagneturi-string-imagneturi)
   - [encode()](#encodedata-partialimagneturi-string)
   - [IMagnetURI Interface](#imagneturi-interface)
+  - [IInfoHashData Interface](#iinfohashdata-interface)
 - [Supported Hash Types](#supported-hash-types)
 - [Advanced Usage](#advanced-usage)
 - [Compatibility](#compatibility)
@@ -62,12 +63,20 @@ import { decode, encode } from 'magnetizer';
 // Decode a magnet link
 const result = decode('magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&dn=example');
 console.log(result.displayName);  // 'example'
-console.log(result.infoHashes);   // ['urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a']
+
+// Access structured info hash data
+console.log(result.infoHashData[0].type);   // 'btih'
+console.log(result.infoHashData[0].value);  // 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a'
+console.log(result.infoHashData[0].urn);    // 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a'
 
 // Encode a magnet link
 const magnetLink = encode({
   displayName: 'example',
-  infoHashes: ['c12fe1c06bba254a9dc9f519b335aa7c1367a88a'],
+  infoHashData: [{
+    type: 'btih',
+    value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+    urn: 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a'
+  }],
   trackers: ['udp://tracker.example.com:80']
 });
 console.log(magnetLink);
@@ -96,6 +105,11 @@ console.log(result);
 //   displayName: null,
 //   length: null,
 //   infoHashes: ['urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a'],
+//   infoHashData: [{
+//     type: 'btih',
+//     value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+//     urn: 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a'
+//   }],
 //   webSeeds: [],
 //   acceptableSources: [],
 //   sources: [],
@@ -103,6 +117,9 @@ console.log(result);
 //   manifest: null,
 //   trackers: []
 // }
+
+// Access the raw hash value directly (no string parsing needed)
+console.log(result.infoHashData[0].value);  // 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a'
 ```
 
 **Decoding with display name and trackers:**
@@ -260,13 +277,22 @@ encode({ infoHashes: ['urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0'] });
 |----------|------|--------------|-------------|
 | `displayName` | `string \| null` | `dn` | Human-readable filename |
 | `length` | `number \| null` | `xl` | Exact file size in bytes |
-| `infoHashes` | `Array<string \| Uint8Array>` | `xt` | URN containing file hash(es) |
+| `infoHashData` | `IInfoHashData[]` | `xt` | Structured info hash data |
+| `infoHashes` | `Array<string \| Uint8Array>` | `xt` | URN containing file hash(es) (**deprecated**, use `infoHashData`) |
 | `webSeeds` | `string[]` | `ws` | HTTP/HTTPS download URLs |
 | `acceptableSources` | `string[]` | `as` | Alternative web download sources |
 | `sources` | `string[]` | `xs` | P2P source links (by content-hash) |
 | `keywords` | `string[]` | `kt` | Search keywords |
 | `manifest` | `string \| null` | `mt` | Link to metafile (e.g., RSS feed) |
 | `trackers` | `string[]` | `tr` | BitTorrent tracker URLs |
+
+### `IInfoHashData` Interface
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `string` | Hash type identifier (`btih`, `btmh`, `sha1`, `md5`, `ed2k`) |
+| `value` | `string` | Raw hexadecimal hash value (lowercase) |
+| `urn` | `string` | Complete URN string (e.g., `urn:btih:c12fe1c0...`) |
 
 
 ## Supported Hash Types
@@ -307,11 +333,16 @@ const result = decode(
   '&xt=urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0'
 );
 
-console.log(result.infoHashes);
+// Access structured data for each hash
+console.log(result.infoHashData);
 // [
-//   'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
-//   'urn:ed2k:31d6cfe0d16ae931b73c59d7e0c089c0'
+//   { type: 'btih', value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a', urn: 'urn:btih:...' },
+//   { type: 'ed2k', value: '31d6cfe0d16ae931b73c59d7e0c089c0', urn: 'urn:ed2k:...' }
 // ]
+
+// Filter by hash type
+const btihHash = result.infoHashData.find(h => h.type === 'btih');
+console.log(btihHash?.value);  // 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a'
 ```
 
 ### BitTorrent v2 Hybrid Torrents
@@ -321,9 +352,17 @@ BitTorrent v2 uses SHA-256 hashes with a multihash prefix. Hybrid torrents inclu
 ```typescript
 const hybridMagnet = encode({
   displayName: 'hybrid-torrent',
-  infoHashes: [
-    'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
-    'urn:btmh:1220caf1e1c30e81cb361b9ee167c4aa411dfc88b7eb23e726d4451376f351009414'
+  infoHashData: [
+    {
+      type: 'btih',
+      value: 'c12fe1c06bba254a9dc9f519b335aa7c1367a88a',
+      urn: 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a'
+    },
+    {
+      type: 'btmh',
+      value: '1220caf1e1c30e81cb361b9ee167c4aa411dfc88b7eb23e726d4451376f351009414',
+      urn: 'urn:btmh:1220caf1e1c30e81cb361b9ee167c4aa411dfc88b7eb23e726d4451376f351009414'
+    }
   ]
 });
 

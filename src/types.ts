@@ -11,6 +11,25 @@ export enum MAGNET_INFO_HASH_TYPE {
 	MESSAGE_DIGEST_5 = 'md5',
 }
 
+/**
+ * Represents a structured info hash with parsed components.
+ * Provides easy access to hash type, raw value, and full URN.
+ */
+export interface IInfoHashData {
+	/**
+	 * The hash type identifier (e.g., 'btih', 'btmh', 'sha1', 'md5', 'ed2k')
+	 */
+	type: MAGNET_INFO_HASH_TYPE | string;
+	/**
+	 * The raw hexadecimal hash value (lowercase, without URN prefix)
+	 */
+	value: string;
+	/**
+	 * The complete URN string (e.g., 'urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a')
+	 */
+	urn: string;
+}
+
 export enum MAGNET_PARAMETER {
 	DISPLAY_NAME = 'dn',
 	LENGTH = 'xl',
@@ -36,12 +55,18 @@ export interface IMagnetURI {
 	 * Size in bytes
 	 */
 	length: number | null;
-	/** 
+	/**
 	 * URN containing file hash
+	 * @deprecated Use infoHashData instead. Will be removed in v4.0.0.
 	 */
 	infoHashes: Array<string | Uint8Array>;
-	/** 
-	 * the payload data served over HTTP(S)
+	/**
+	 * Structured info hash data with parsed type, value, and URN.
+	 * Provides direct access to hash components without string parsing.
+	 */
+	infoHashData: Array<IInfoHashData>;
+	/**
+	 * The payload data served over HTTP(S)
 	 */
 	webSeeds: Array<string>;
 	/** 
